@@ -5,13 +5,16 @@
 *.*.secretchip.net
 *.adguard.io
 *.adjust.com
+*.anthropic.com
 *.aws.a2z.com
 *.buymeacoffee.com
 *.cazacubogdan.com
 *.cazacubogdan.direct.quickconnect.to
 *.crowdsec.net
 *.debian.org
+*.delhaize.be
 *.dmcardweb.com.br
+*.docker.com
 *.elasticbeanstalk.com
 *.epam.com
 *.experian.com
@@ -23,6 +26,7 @@
 *.gitlab.com
 *.glovoapp.com
 *.googlevideo.com
+*.hichina.com
 *.ido.ro
 *.iobit.com
 *.knowledgehut.com
@@ -790,6 +794,10 @@ actuabd.com
 acus.org
 ad-shield.io
 ad.nwi.jp
+ada2.in
+adash.man.aliyuncs.com
+adashx.m.taobao.com
+adaware.com
 adaway.github.io
 adaway.org
 adaxxcloud.com
@@ -814,15 +822,14 @@ adelfibanking.com
 adesp.link
 adesta.cc
 adevarul.ro
-adfox.ru
 adguard-dns.io
+adblock.turtlecute.org
 adguard.com
 adguardteam.github.io
 adialerts.com
 adimg.nate.com
 adiu.amap.com
 adj.st
-adjust.com
 adm.to
 admd.ink
 admeira.ch
@@ -832,13 +839,7 @@ admisiones.unicah.edu
 admitad.com
 adn.wargaming.net
 adnt.wargaming.net
-adobedtm.com
-adshell.net
-adswizz.com
-adtechus.com
-advcash.com
-adverigo.com
-adyen.com
+adobe.com
 ae.online.standardchartered.com
 ae01.alicdn.com
 aegis.dns.secretchip.net
@@ -852,12 +853,6 @@ af.mopo.jp
 afb.az
 aff.wevpn.com
 aff44.com
-affiliatly.com
-affinitycu.ca
-affirm.com
-afiliados.hostgator.com.br
-afjord-sparebank.no
-afl.rakuten.co.jp
 afraid.org
 afresh.link
 afrinic.net
@@ -1143,9 +1138,6 @@ an.to
 ana.ms
 anacon.org
 anaf.ro
-analitik.edevlet.gov.tr
-analytics.pinterest.com
-analytics.twitter.com
 anbisu.com
 anch.co
 anchorurl.cloud
@@ -1185,6 +1177,7 @@ anrdoezrs.net
 answ.xyz
 answers.microsoft.com
 anthos.googleapis.com
+anthropic.com
 antinawala.team
 antonellapouncedcrewels.com
 antutu.com
@@ -1318,6 +1311,7 @@ api.solvemedia.com
 api.speedpix.com.br
 api.speedspot.org
 api.stackcommerce.net
+api.staging.arkana-app.com
 api.surfeasy.com
 api.target.com
 api.tech26.de
@@ -2342,6 +2336,7 @@ bitw.in
 bitwala.com
 bitwarden.com
 bitwarden.eu
+bitwardenxx5keu3w.blob.core.windows.net
 bitx.bio
 bity.com
 bity.la
@@ -3077,6 +3072,7 @@ cdn.syndication.twitter.com
 cdn.tinypass.com
 cdn.tpdads.com
 cdn.vidible.tv
+cdn.vsassets.io
 cdn.webclicks24.com
 cdn.www.spiegel.de
 cdn1.manager-magazin.de
@@ -3119,6 +3115,7 @@ celfam.us
 celsius.network
 census.gov
 centi.ai
+central.bitdefender.com
 centre.is
 centrifuge.io
 centrinvest.ru
@@ -3281,6 +3278,7 @@ cipta.link
 ciptalink.com
 ciq.to
 circle.ci
+circleci.com
 cirk.me
 cisco.com
 cision.com
@@ -3644,6 +3642,7 @@ cocn.in
 codango.run
 code.bildstatic.de
 code.jquery.com
+code.visualstudio.com
 codecanyon.net
 codegood.net
 codeload.github.com
@@ -3909,11 +3908,14 @@ creditup.com.ua
 creditural.ru
 creeds.io
 creepylink.com
+cres.waze.com
+cresg.waze.com
 criadoresdofuturo.com.br
 crickcounty.com
 criptointercambio.com
 crisp.to
 critch.it
+criterionm.com
 crizons.pro
 crl.comodo.net
 crl3.digicert.com
@@ -3976,6 +3978,7 @@ cte.li
 ctfl.io
 ctfn.cc
 cti.secretchip.net
+ctilesgcs-row.waze.com
 ctldl.windowsupdate.com
 ctos.xyz
 ctr.sh
@@ -4306,6 +4309,7 @@ ddot.to
 ddp.net
 ddw.nu
 de.ioam.de
+de.ots.io.mi.com
 de2wa.com
 dealabs.digidip.net
 dealsfindersgroup.com
@@ -4330,6 +4334,7 @@ degussa-bank.de
 dehe.ir
 deheh.ir
 deine-volksbank.de
+delhaize.be
 deli.bz
 delicious.com
 deliverable.email
@@ -4598,6 +4603,7 @@ docodoco.jp
 docremedio.xyz
 docs.airship.com
 docs.bugsnag.com
+docs.checkcle.io
 docs.flatpak.org
 docs.google.com
 docs.microsoft.com
@@ -7395,6 +7401,7 @@ fastbill.com
 fastbio.app
 fastcdn.com
 fastcompany.com
+fastfilehost.link
 fasthouse.me
 fastjpeg.net
 fastlinks.com.tr
@@ -7718,6 +7725,7 @@ fr.app.chat.global.xiaomi.net
 fr.banquepopulaire.cyberplus
 fr135.net
 frama.link
+frame.work
 francosolerio.com
 frankenberger-bank.de
 frankfurter-sparkasse.de
@@ -7897,6 +7905,7 @@ gate.vseplatezhi.ru
 gateway-asset.icloud-content.com
 gateway.facebook.com
 gateway.fe.apple-dns.net
+gateway.staging.arkana-app.com
 gatustox.net
 gaw.kr
 gaysi.live
@@ -7919,6 +7928,7 @@ gct.dashboard.wedare.pl
 gdanstum.net
 gdlp01.c-wss.com
 gdmf.apple.com.akadns.net
+gdpr.eu
 gdurl.com
 ge.tt
 gearbest.com
@@ -7940,6 +7950,7 @@ gen.cat
 generali.it
 generalmotorscorporation.sc.omtrdc.net
 generatemyqr.com
+generating.link
 generatortools-five.vercel.app
 geni.us
 genie.co.kr
@@ -8011,6 +8022,7 @@ getblue.me
 getcode.pw
 getdrip.com
 getf.ly
+getfinefile.com
 gethatch.com
 geti.in
 getlasso.co
@@ -8078,6 +8090,7 @@ girlte.ch
 git.ad
 git.io
 git.new
+github.blog
 github.co
 github.com
 github.githubassets.com
@@ -8766,6 +8779,7 @@ hi.sat.cool
 hi4.in
 hibfox.com
 hibu.com
+hichina.com
 hicider.com
 hide.link
 hide.my
@@ -10332,6 +10346,7 @@ kotl.in
 koyu.space
 kp.org
 kpmg.ch
+kpmg.com
 kqzyfj.com
 kr.pe
 kr3w.de
@@ -11255,6 +11270,7 @@ linqry.com
 linqup.in
 lintlink.com
 linux.mom
+linuxize.com
 linxonly.com
 lionl.ink
 liqpay.com
@@ -11889,6 +11905,7 @@ media.licdn.com
 media.sbs.com.au
 media.themoviedb.org
 media.tumblr.com
+media.ziaruldeiasi.ro
 media0.giphy.com
 media01.eu
 media1.giphy.com
@@ -11967,6 +11984,7 @@ mero.page
 merourl.com
 merriam-webster.com
 merzcity.link
+mesagerulneamt.ro
 mesej.la
 meshca.googleapis.com
 meshconfig.googleapis.com
@@ -12664,6 +12682,7 @@ nationalgeographic.com
 nationwide.co.uk
 nats.myqnapcloud.io
 natsbee.link
+natsung-prod.naturalcycles.com
 natura.com.vc
 nature.com
 nature.ly
@@ -12861,6 +12880,7 @@ nipnit.com
 nippi.ly
 nippy.tools
 nispa.de
+nist.gov
 nitroflare.com
 nitroseo.net
 nity.fr
@@ -13135,6 +13155,7 @@ ohmy.link
 ohstitans.org
 ohuowd.com
 oi.bankia.es
+oid-ws.orlen.pl
 oii.io
 oikit.link
 oink.us
@@ -13456,6 +13477,7 @@ opendns.com
 openinapp.link
 openmediavault.github.io
 openmylink.io
+openrouter.ai
 opensea.io
 opensource.org
 openstreetmap.org
@@ -14122,6 +14144,7 @@ portal.librus.pl
 portal.nefteprom.com
 portalbank.no
 portaldepagosmercantil.com
+portalpacjenta.luxmed.pl
 portmanat.az
 portmone.com.ua
 portoseguro.com.br
@@ -15177,6 +15200,7 @@ remundo.app
 renaud.li
 renault-bank-direkt.at
 renault-bank-direkt.de
+renderer-row.waze.com
 renew.ge
 repackert.com
 repackmepoymi.cf
@@ -16102,6 +16126,7 @@ shareaprofit.com
 shareasale-analytics.com
 shareasale.com
 shareclicker.com
+shareease.link
 sharein.com
 sharelinkpro.com
 sharem.tech
@@ -17773,6 +17798,7 @@ superuser.com
 superxavier.link
 supi.tools
 supplyframe.com
+support.anthropic.com
 support.coinbase.com
 support.microsoft.com
 support.precisioncontent.com
@@ -18210,6 +18236,7 @@ thefunkymonkey.lu
 thegeekpage.com
 theglobeandmail.com
 theguardian.com
+thehackernews.com
 thein.fo
 theinstapay.com
 thejoekuskie.com
@@ -18697,37 +18724,6 @@ tracker.trackerfix.com
 tracker.trust-link.io
 tracker.vaudit.com
 tracker.yoncamarket.com
-trackercc.com
-tracking-bcr.conectoo.com
-tracking-protection.cdn.mozilla.net
-tracking.alhilal.abudhabi
-tracking.bol.com
-tracking.cashkaro.com
-tracking.delupe.net
-tracking.dpd.de
-tracking.epicgames.com
-tracking.ftmo.com
-tracking.inflection.io
-tracking.magnetmail.net
-tracking.mailerswift.app
-tracking.minetracking.com
-tracking.nextotrack.com
-tracking.publicidees.com
-tracking.raffesia.com
-tracking.s24.com
-tracking.socketlabs.com
-tracking.tldrnewsletter.com
-tracking.tracktolast.com
-tracking.trucliks.com
-tracking.truthfinder.com
-tracking.wordvineswz.com
-trackingsafeads.com
-trackingservice.monday.com
-trackjs.com
-tracksninja.com
-trackthis.io
-trackurl.link
-trackwithadsplus.com
 trade.paritem.com
 trade.re
 trade.webborsam.com
@@ -18738,15 +18734,6 @@ tradetracker.net
 tradie.wiki
 traff.as
 traffbe.com
-traffic-nts-ip-assoc.xz.fbcdn.net
-traffic.alexa.com
-traffic.eks.megaphone.cloud
-traffic.greenwingsmarketing.com
-traffic.libsyn.com
-traffic.megaphone.fm
-traffic.spot.im
-trafficmanager.net
-trafficrouter.io
 trafget.com
 traficut.com
 trahm.co
@@ -18767,12 +18754,6 @@ trbinance.com
 trbna.com
 trbs.link
 trceme.com
-trck.biz
-trck.easy-m.de
-trck.fttrck.net
-trck.gg
-trck.me
-trck.wargaming.net
 treasuredata.com
 treasurydirect.gov
 treelinked.com
@@ -18821,40 +18802,6 @@ trips-pa.googleapis.com
 trisula88short.xyz
 tritri.my
 trizlink.com
-trk.affapp.io
-trk.affattr.com
-trk.bc.footlocker.com
-trk.bc.footlocker.de
-trk.clptrk.com
-trk.concthub.com
-trk.ecomm.lenovo.com
-trk.effiflw.com
-trk.esn.com
-trk.flexitrck.com
-trk.grdhub.com
-trk.grmcart.com
-trk.innodsk.com
-trk.jetstrms.com
-trk.mg.aadvantageeshopping.com
-trk.musvccustom.net
-trk.nomadzdigital.com
-trk.outbizz.com
-trk.rdrclp.com
-trk.specialized.com
-trk.sveltelinks.com
-trk.teonea.fr
-trk.thewanderclub.com
-trk.trktrackier.com
-trk.vibebusi.com
-trk.wavezw.com
-trk.wewotrk.com
-trk.zaptk.com
-trk24.com
-trkjkamaret.com
-trkn.us
-trkr.ws
-trkrcc.com
-trks.ca
 trl.ca
 trnqify.com
 troms.me
@@ -18872,8 +18819,6 @@ trueurl.in
 trunc.it
 trunkateurl.com
 trust-provider.com
-trust.ru
-trust.yandex.ru
 trust.zone
 trustafy.link
 trustbit.me
@@ -19082,7 +19027,6 @@ ubm.io
 ubnt.link
 ubot.com.tw
 ubr.to
-ubrr.ru
 ubs.com
 ubuy.link
 uby.es
@@ -19095,19 +19039,16 @@ uchicago.edu
 uchopx.com
 ucla.edu
 ucla.in
-ucoz.ru
 ucpb.biz
 ucweb.com
 ud-chat.signal.org
 udc.yahoo.com
 udec.cl
-udengi.ru
 udight.com
 ue.dnb.pl
 ue.flipboard.com
 uepodownload.mediatek.com
 uepx.com
-ufa.wifi.domru.ru
 ufai.app
 ufasofilmebi.one
 ufcqc.link
@@ -19123,7 +19064,6 @@ uhishado.com
 ui.la
 ui.skype.akadns.net
 ui.skype.com
-ui8.ru
 uiboot.netflix.com
 uiccu.org
 uich.cc
@@ -19138,7 +19078,6 @@ ukmail.com
 ukoeln.de
 ukrgasbank.com
 ukrsibbank.com
-ul.royal-bank.ru
 ul.rs
 ul.to
 ul3.ir
@@ -19151,7 +19090,6 @@ ultra.bo
 ultrashort.me
 ulvis.net
 umapa.pl
-umbank.ru
 umbe.io
 umblr.com
 umcu.org
@@ -19181,7 +19119,6 @@ unesa.xyz
 unesco.org
 uni.cf
 uni.ms
-uniastrum.ru
 unibank.az
 unicaja.es
 unicajabanco.es
@@ -19192,7 +19129,6 @@ unicreditbank.hu
 unicreditbanking.eu
 unicreditbanking.net
 unicycle.to
-unifinbank.ru
 unim.ma
 unimma.link
 union-investment.de
@@ -19202,10 +19138,8 @@ unionbankonline.co.in
 unionbankph.com
 unipapa.co
 unison24.com.ua
-unistream.ru
 united-links.com
 unitedbike.com
-unitpay.ru
 unity3d.com
 uniurl.net
 universalbank.com.ua
@@ -19243,7 +19177,6 @@ uom.link
 uorbursarysupport.com
 uos.cc
 up.to
-upay.megafon.ru
 upc.pl
 update.avlyun.sec.miui.com
 update.biv.sony.tv
@@ -19284,7 +19217,6 @@ upyun.online
 upzat.com
 upziq.com
 uqsxy.x.incapdns.net
-ur-l.ru
 ur.link
 ur0.link
 ur1.ca
@@ -19292,10 +19224,6 @@ ur3.us
 ur301.com
 ur4l.com
 ura.vn
-uralfd.ru
-uralprombank.ru
-uralsibbank.ru
-uralweb.ru
 urb.tf
 urbanairship.com
 urbandictionary.com
@@ -19533,7 +19461,6 @@ urlllll.com
 urllover.com
 urlm.net
 urlme.cc
-urlme.ru
 urlme.us
 urlmini.io
 urlmkr.net
@@ -20724,6 +20651,7 @@ wft.sa
 whatconverts.com
 whatel.se
 whatfinger.com
+whatismyip.org
 whatismyipaddress.com
 whatsapp.com
 whatsapp.net
@@ -20768,6 +20696,7 @@ wildc.at
 wildflowerlinks.org
 wiley.com
 willgo.link
+wimi-api-v4.whatismyip.com
 win.gs
 win10.ipv6.microsoft.com
 win1710.ipv6.microsoft.com
@@ -20907,6 +20836,7 @@ wscdns.com
 wsimg.com
 wsj.com
 wslat.net
+wsm.vitay.pl
 wsngb.com
 wso.li
 wssurl.com
@@ -21017,6 +20947,7 @@ www.coinbase.com
 www.combank.net
 www.communitybankbd.com
 www.coronavirus.gov
+www.criterionm.com
 www.crowdsec.net
 www.cursbnr.ro
 www.cvcflbd.com
@@ -21062,6 +20993,7 @@ www.forbes.com
 www.forms.gle
 www.fr
 www.fsiblbd.com
+www.g4media.ro
 www.geojs.io
 www.glb.paypal.com
 www.globalislamibankbd.com
@@ -21203,6 +21135,7 @@ www.pntra.com
 www.pntrac.com
 www.pntrack.com
 www.pornhub.com
+www.portainer.io
 www.posb.com.sg
 www.pr0gramm.com
 www.premierbankltd.com
@@ -21248,6 +21181,7 @@ www.squaretrade.com
 www.standardbankbd.com
 www.standardchartered.com
 www.statcounter.com
+www.stiri-neamt.ro
 www.stirilekanald.ro
 www.svyaznoy.ru
 www.techiediaries.com
@@ -21281,6 +21215,7 @@ www.vscode-unpkg.net
 www.wangbase.com
 www.warez-bb.org
 www.web.archive.org
+www.whatismyip.com
 www.who.int
 www.wikipedia.org
 www.wikisource.org
@@ -21801,6 +21736,7 @@ znym.co
 znz.kr
 zo.cm
 zobzob.com
+zodiac-app-staging.firebaseapp.com
 zoho.com
 zoho.in
 zoho.to
