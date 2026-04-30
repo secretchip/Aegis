@@ -1,12 +1,35 @@
 #!/usr/bin/env python3
-import ipaddress
+"""
+Extract valid DNS allow/block entries from raw downloaded list files.
+
+Reads everything matching public_{type}_lists/input/public_lists/input-{type}*.txt,
+validates each token via the shared validator, and writes a single merged
+output to public_{type}_lists/input/input-{type}-auto-clean.txt. Raw input
+files are deleted after processing.
+
+Usage: cleanup.py --type {block|allow}
+"""
+import argparse
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable, Iterator, Set
 
-TYPE = "block"
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib" / "python"))
+from validate import load_or_fetch_iana_tlds, validate_entry  # noqa: E402
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--type", required=True, choices=["block", "allow"], dest="kind"
+    )
+    return parser.parse_args()
+
+
+_args = parse_args()
+TYPE = _args.kind
 
 # Strict extraction for valid IPv4s and DNS blocklist hostname patterns.
 # Supports:
@@ -36,47 +59,6 @@ URL_RE = re.compile(r'(?i)\bhttps?://[^\s<>"\'()]+')
 INPUT_FILE_RE = re.compile(rf"^input-{TYPE}.*\.txt$", re.IGNORECASE)
 
 
-def is_valid_ipv4(value: str) -> bool:
-    try:
-        ipaddress.IPv4Address(value)
-        return True
-    except ValueError:
-        return False
-
-
-def is_valid_dns_block_entry(value: str) -> bool:
-    value = value.rstrip(".").lower()
-
-    if len(value) > 253 or "." not in value:
-        return False
-
-    labels = value.split(".")
-    if any(not label for label in labels):
-        return False
-
-    # Final label cannot be numeric-only for domain-style entries
-    if labels[-1].isdigit():
-        return False
-
-    label_re = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$", re.IGNORECASE)
-
-    # Allow "*" as a whole label only, since that is useful in DNS blocking.
-    # Reject malformed wildcard labels like a*, *a, ab*cd, etc.
-    for label in labels:
-        if len(label) > 63:
-            return False
-        if "_" in label:
-            return False
-        if label == "*":
-            continue
-        if "*" in label:
-            return False
-        if not label_re.match(label):
-            return False
-
-    return True
-
-
 def iter_text_from_file(path: Path) -> Iterator[str]:
     with path.open("r", encoding="utf-8", errors="ignore") as fh:
         for line in fh:
@@ -99,18 +81,19 @@ def process_line(
     valid_ips: Set[str],
     rejected_tokens: Set[str],
     discovered_urls: Set[str],
+    valid_tlds: Set[str],
 ) -> None:
     accepted_this_line: Set[str] = set()
 
     for match in VALID_CANDIDATE_RE.finditer(line):
-        token = match.group(1).lower().rstrip(".")
-        if is_valid_ipv4(token):
-            valid_ips.add(token)
-            valid_entries.add(token)
-            accepted_this_line.add(token)
-        elif is_valid_dns_block_entry(token):
-            valid_entries.add(token)
-            accepted_this_line.add(token)
+        token = match.group(1)
+        result = validate_entry(token, valid_tlds)
+        if not result.valid:
+            continue
+        if result.kind == "ipv4":
+            valid_ips.add(result.normalized)
+        valid_entries.add(result.normalized)
+        accepted_this_line.add(result.normalized)
 
     for match in REJECT_CANDIDATE_RE.finditer(line):
         token = match.group(1).lower().rstrip(".")
@@ -118,7 +101,7 @@ def process_line(
         if token in accepted_this_line:
             continue
 
-        if is_valid_ipv4(token) or is_valid_dns_block_entry(token):
+        if validate_entry(token, valid_tlds).valid:
             continue
 
         rejected_tokens.add(token)
@@ -145,17 +128,20 @@ def main() -> int:
     script_path = Path(__file__).resolve()
     shield_root = script_path.parent.parent
 
-    input_dir = shield_root / f"public_{TYPE}_lists" / "input" / "public_lists"
-    output_file = shield_root / f"public_{TYPE}_lists" / "input" / f"input-{TYPE}-auto-clean.txt"
-    trash_dir = shield_root / "scripts" / "temp" / f"clean-{TYPE}"
+    input_dir = shield_root / "var" / "intake" / TYPE / "input" / "public_lists"
+    output_file = shield_root / "var" / "intake" / TYPE / "input" / f"input-{TYPE}-auto-clean.txt"
+    trash_dir = shield_root / "var" / "tmp" / f"clean-{TYPE}"
+    tld_cache = shield_root / "var" / "state" / "iana-tlds.txt"
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_dir = shield_root / "scripts" / "logs" / "archive" / f"clean-{TYPE}" / timestamp
+    log_dir = shield_root / "var" / "logs" / f"clean-{TYPE}" / timestamp
 
     if not input_dir.exists():
         raise FileNotFoundError(f"Input directory does not exist: {input_dir}")
     ensure_directory(output_file.parent)
     ensure_directory(trash_dir)
     ensure_directory(log_dir)
+
+    valid_tlds = load_or_fetch_iana_tlds(tld_cache)
 
     inputs = list(discover_inputs(input_dir))
     if not inputs:
@@ -203,7 +189,14 @@ def main() -> int:
         file_urls: Set[str] = set()
 
         for line in iter_text_from_file(path):
-            process_line(line, file_valid_entries, file_ips, file_rejected, file_urls)
+            process_line(
+                line,
+                file_valid_entries,
+                file_ips,
+                file_rejected,
+                file_urls,
+                valid_tlds,
+            )
 
         aggregate_valid_entries.update(file_valid_entries)
         aggregate_ips.update(file_ips)

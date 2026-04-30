@@ -10,15 +10,15 @@ RUN_TS="$(date '+%Y%m%d-%H%M%S')"
 ALLOW_DIR="${ROOT_DIR}/public_allow_lists/domains"
 BLOCK_DIR="${ROOT_DIR}/public_block_lists/domains"
 
-LOG_ARCHIVE_DIR="${ROOT_DIR}/scripts/logs/archive/${RUN_TS}"
-TEMP_DIR="${ROOT_DIR}/scripts/temp"
+LOG_ARCHIVE_DIR="${ROOT_DIR}/var/logs/reconcile/${RUN_TS}"
+TEMP_DIR="${ROOT_DIR}/var/state"
 TMP_DIR="${LOG_ARCHIVE_DIR}/tmp"
 BACKUP_DIR="${LOG_ARCHIVE_DIR}/backup"
 
 DETAIL_LOG="${LOG_ARCHIVE_DIR}/detail-${RUN_TS}.tsv"
 SUMMARY_LOG="${LOG_ARCHIVE_DIR}/summary-${RUN_TS}.tsv"
 CONSOLE_LOG="${LOG_ARCHIVE_DIR}/run-${RUN_TS}.log"
-SUMMARY_HISTORY="${ROOT_DIR}/scripts/logs/archive/summary-history.tsv"
+SUMMARY_HISTORY="${ROOT_DIR}/var/logs/reconcile/summary-history.tsv"
 
 IANA_TLDS_URL="https://data.iana.org/TLD/tlds-alpha-by-domain.txt"
 VALID_TLDS_FILE="${TEMP_DIR}/iana-tlds.txt"
@@ -33,9 +33,11 @@ BLOCK_EXCLUDE_REGEX="${BLOCK_EXCLUDE_REGEX:-^$}"
 ALLOW_FILES=()
 BLOCK_FILES=()
 
-mkdir -p "$LOG_ARCHIVE_DIR" "$TMP_DIR" "$BACKUP_DIR" "$TEMP_DIR"
-touch "$DETAIL_LOG" "$SUMMARY_LOG" "$SUMMARY_HISTORY"
-exec > >(tee -a "$CONSOLE_LOG") 2>&1
+init_run_dirs() {
+  mkdir -p "$LOG_ARCHIVE_DIR" "$TMP_DIR" "$BACKUP_DIR" "$TEMP_DIR"
+  touch "$DETAIL_LOG" "$SUMMARY_LOG" "$SUMMARY_HISTORY"
+  exec > >(tee -a "$CONSOLE_LOG") 2>&1
+}
 
 usage() {
   cat <<USAGE
@@ -76,6 +78,24 @@ fail() {
 
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || fail "Required command not found: $1"
+}
+
+python_normalize() {
+  # Validate-and-normalize an allow/block file using the shared Python
+  # validator (pipeline/lib/normalize_dns_file.py). Writes valid domain
+  # entries to $out, appends rejection details to $DETAIL_LOG, and prints
+  # the per-file removed-invalid count on stdout for the caller to capture.
+  local src="$1" out="$2" side="$3"
+  local stats
+  stats="$(
+    python3 "${SCRIPT_DIR}/lib/python/normalize_dns_file.py" \
+      "$src" "$out" \
+      --tlds "$VALID_TLDS_FILE" \
+      --side "$side" \
+      --run-ts "$RUN_TS" \
+      --detail-log "$DETAIL_LOG" 2>&1 1>/dev/null
+  )"
+  awk -F'\t' 'NR==1 { print $5+0; exit }' <<<"$stats"
 }
 
 validate_bool() {
@@ -292,119 +312,57 @@ preprocess_allow_file() {
   safe_name="$(printf '%s' "$src" | sed 's|/|__|g')"
   local out_stage1="${TMP_DIR}/allow-stage1-${safe_name}"
   local summary_tmp="${TMP_DIR}/summary-allow-stage1-${safe_name}.tsv"
+  local removed_invalid
+
+  removed_invalid="$(python_normalize "$src" "$out_stage1" "allow")"
+  removed_invalid="${removed_invalid:-0}"
 
   awk \
     -v role="allow_stage1" \
     -v src="$src" \
-    -v out="$out_stage1" \
-    -v detail_log="$DETAIL_LOG" \
     -v summary_tmp="$summary_tmp" \
     -v allow_exact_raw="$ALLOW_EXACT_KEYS_RAW" \
     -v allow_wc_raw="$ALLOW_WILDCARD_BASES_RAW" \
-    -v run_ts="$RUN_TS" \
-    -v tld_file="$VALID_TLDS_FILE" '
-    BEGIN {
-      FS="\n"
-      while ((getline t < tld_file) > 0) {
-        gsub(/\r/, "", t)
-        if (t ~ /^#/ || t ~ /^[[:space:]]*$/) continue
-        t = toupper(t)
-        VALID_TLDS[t] = 1
-      }
-      close(tld_file)
-    }
-
-    function ltrim(s) { sub(/^[[:space:]]+/, "", s); return s }
-    function rtrim(s) { sub(/[[:space:]]+$/, "", s); return s }
-    function trim(s)  { return rtrim(ltrim(s)) }
-
+    -v removed_invalid="$removed_invalid" '
     function wildcard_base(s, tmp) {
       tmp = s
       while (tmp ~ /^\*\./) sub(/^\*\./, "", tmp)
       return tmp
     }
 
-    function is_valid_hostname_core(s,    tmp, n, a, i, tld) {
-      tmp = wildcard_base(s)
-      if (tmp == "") return 0
-      if (tmp ~ /\*/) return 0
-      n = split(tmp, a, ".")
-      if (n < 2) return 0
-      for (i = 1; i <= n; i++) {
-        if (a[i] == "") return 0
-        if (length(a[i]) > 63) return 0
-        if (a[i] !~ /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/) return 0
-      }
-      tld = toupper(a[n])
-      return (tld in VALID_TLDS)
-    }
-
-    function normalize_entry(raw,    s) {
-      norm_reason = ""
-      had_trailing_dot = 0
-      s = trim(raw)
-      if (s == "") {
-        norm_reason = "blank_or_whitespace"
-        return ""
-      }
-      if (s ~ /[[:space:]]/) {
-        norm_reason = "internal_whitespace"
-        return ""
-      }
-      s = tolower(s)
-      while (s ~ /\.$/) {
-        sub(/\.$/, "", s)
-        had_trailing_dot = 1
-      }
-      if (!is_valid_hostname_core(s)) {
-        norm_reason = had_trailing_dot ? "invalid_after_trailing_dot_removal_or_invalid_tld" : "invalid_entry_or_invalid_tld"
-        return ""
-      }
-      return s
-    }
-
     function entry_type(s) {
       return (s ~ /^\*\./ ? "wildcard" : "exact")
     }
 
-    function log_detail(side, action, reason, original, normalized) {
-      printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", run_ts, side, src, action, reason, original, normalized >> detail_log
-    }
-
     {
       input_lines++
-      original = $0
-      normalized = normalize_entry(original)
-
-      if (normalized == "") {
-        removed_invalid++
-        log_detail("allow", "remove", norm_reason, original, "")
-        next
-      }
-
-      print normalized >> out
-      if (entry_type(normalized) == "exact") {
-        print normalized >> allow_exact_raw
+      if (entry_type($0) == "exact") {
+        print $0 >> allow_exact_raw
         allow_exact_kept++
       } else {
-        print wildcard_base(normalized) >> allow_wc_raw
+        print wildcard_base($0) >> allow_wc_raw
         allow_wc_kept++
       }
       kept++
     }
 
     END {
-      printf "%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", role, src, input_lines+0, kept+0, removed_invalid+0, 0, 0, 0, allow_exact_kept+0, allow_wc_kept+0 > summary_tmp
+      printf "%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", role, src, (input_lines+removed_invalid)+0, kept+0, removed_invalid+0, 0, 0, 0, allow_exact_kept+0, allow_wc_kept+0 > summary_tmp
     }
-  ' "$src"
+  ' "$out_stage1"
 }
 
 process_block_file() {
   local src="$1"
   local safe_name
   safe_name="$(printf '%s' "$src" | sed 's|/|__|g')"
+  local normalized_in="${TMP_DIR}/block-normalized-${safe_name}"
   local out_stage1="${TMP_DIR}/block-stage1-${safe_name}"
   local summary_tmp="${TMP_DIR}/summary-block-stage1-${safe_name}.tsv"
+  local removed_invalid
+
+  removed_invalid="$(python_normalize "$src" "$normalized_in" "block")"
+  removed_invalid="${removed_invalid:-0}"
 
   awk \
     -v role="block_stage1" \
@@ -417,17 +375,8 @@ process_block_file() {
     -v matched_exact_raw="$MATCHED_EXACT_BOTH_RAW" \
     -v matched_wc_raw="$MATCHED_WILDCARD_BASES_BOTH_RAW" \
     -v run_ts="$RUN_TS" \
-    -v tld_file="$VALID_TLDS_FILE" '
+    -v removed_invalid="$removed_invalid" '
     BEGIN {
-      FS="\n"
-      while ((getline t < tld_file) > 0) {
-        gsub(/\r/, "", t)
-        if (t ~ /^#/ || t ~ /^[[:space:]]*$/) continue
-        t = toupper(t)
-        VALID_TLDS[t] = 1
-      }
-      close(tld_file)
-
       while ((getline e < allow_exact_file) > 0) {
         if (e != "") ALLOW_EXACT[e] = 1
       }
@@ -439,53 +388,10 @@ process_block_file() {
       close(allow_wc_file)
     }
 
-    function ltrim(s) { sub(/^[[:space:]]+/, "", s); return s }
-    function rtrim(s) { sub(/[[:space:]]+$/, "", s); return s }
-    function trim(s)  { return rtrim(ltrim(s)) }
-
     function wildcard_base(s, tmp) {
       tmp = s
       while (tmp ~ /^\*\./) sub(/^\*\./, "", tmp)
       return tmp
-    }
-
-    function is_valid_hostname_core(s,    tmp, n, a, i, tld) {
-      tmp = wildcard_base(s)
-      if (tmp == "") return 0
-      if (tmp ~ /\*/) return 0
-      n = split(tmp, a, ".")
-      if (n < 2) return 0
-      for (i = 1; i <= n; i++) {
-        if (a[i] == "") return 0
-        if (length(a[i]) > 63) return 0
-        if (a[i] !~ /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/) return 0
-      }
-      tld = toupper(a[n])
-      return (tld in VALID_TLDS)
-    }
-
-    function normalize_entry(raw,    s) {
-      norm_reason = ""
-      had_trailing_dot = 0
-      s = trim(raw)
-      if (s == "") {
-        norm_reason = "blank_or_whitespace"
-        return ""
-      }
-      if (s ~ /[[:space:]]/) {
-        norm_reason = "internal_whitespace"
-        return ""
-      }
-      s = tolower(s)
-      while (s ~ /\.$/) {
-        sub(/\.$/, "", s)
-        had_trailing_dot = 1
-      }
-      if (!is_valid_hostname_core(s)) {
-        norm_reason = had_trailing_dot ? "invalid_after_trailing_dot_removal_or_invalid_tld" : "invalid_entry_or_invalid_tld"
-        return ""
-      }
-      return s
     }
 
     function entry_type(s) {
@@ -508,26 +414,19 @@ process_block_file() {
 
     {
       input_lines++
-      original = $0
-      normalized = normalize_entry(original)
-
-      if (normalized == "") {
-        removed_invalid++
-        log_detail("block", "remove", norm_reason, original, "")
-        next
-      }
+      normalized = $0
 
       type = entry_type(normalized)
       if (type == "exact") {
         if (normalized in ALLOW_EXACT) {
           removed_exact_both++
           print normalized >> matched_exact_raw
-          log_detail("block", "remove", "exact_present_in_allow_and_block_remove_from_both", original, normalized)
+          log_detail("block", "remove", "exact_present_in_allow_and_block_remove_from_both", normalized, normalized)
           next
         }
         if (is_covered_by_allow_wc(normalized)) {
           removed_covered_by_allow_wc++
-          log_detail("block", "remove", "block_exact_covered_by_allow_wildcard", original, normalized)
+          log_detail("block", "remove", "block_exact_covered_by_allow_wildcard", normalized, normalized)
           next
         }
       } else {
@@ -535,7 +434,7 @@ process_block_file() {
         if (base in ALLOW_WC_BASE) {
           removed_wc_both++
           print base >> matched_wc_raw
-          log_detail("block", "remove", "wildcard_present_in_allow_and_block_remove_from_both", original, normalized)
+          log_detail("block", "remove", "wildcard_present_in_allow_and_block_remove_from_both", normalized, normalized)
           next
         }
       }
@@ -545,9 +444,9 @@ process_block_file() {
     }
 
     END {
-      printf "%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", role, src, input_lines+0, kept+0, removed_invalid+0, removed_exact_both+0, removed_covered_by_allow_wc+0, removed_wc_both+0, 0, 0 > summary_tmp
+      printf "%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", role, src, (input_lines+removed_invalid)+0, kept+0, removed_invalid+0, removed_exact_both+0, removed_covered_by_allow_wc+0, removed_wc_both+0, 0, 0 > summary_tmp
     }
-  ' "$src"
+  ' "$normalized_in"
 }
 
 finalize_allow_file() {
@@ -630,20 +529,62 @@ dedupe_master_files() {
   LC_ALL=C sort -u "$MATCHED_WILDCARD_BASES_BOTH_RAW" > "$MATCHED_WILDCARD_BASES_BOTH"
 }
 
+resolve_reconcile_drop_threshold() {
+  # Per-type drop threshold for the overwrite_original guard.
+  # Resolution order:
+  #   1. DROP_THRESHOLD_{BLOCK,ALLOW}         (per-type override)
+  #   2. DROP_THRESHOLD                        (global override)
+  #   3. Default: 10 for block, 30 for allow   (small lists tolerate bigger %)
+  local file_type="$1" name val
+  name="DROP_THRESHOLD_${file_type^^}"
+  val="${!name:-}"
+  if [[ -n "$val" ]]; then echo "$val"; return; fi
+  val="${DROP_THRESHOLD:-}"
+  if [[ -n "$val" ]]; then echo "$val"; return; fi
+  case "$file_type" in
+    block) echo 10 ;;
+    allow) echo 30 ;;
+    *)     echo 10 ;;
+  esac
+}
+
 overwrite_original() {
   local src="$1"
   local safe_name base_name dir_name samefs_tmp final_file
+  local orig_lines final_lines file_type pct
   safe_name="$(printf '%s' "$src" | sed 's|/|__|g')"
   base_name="$(basename "$src")"
   dir_name="$(dirname "$src")"
 
   if [[ " $ALLOW_FILE_LOOKUP " == *"|$src|"* ]]; then
     final_file="${TMP_DIR}/final-${safe_name}"
+    file_type="allow"
   else
     final_file="${TMP_DIR}/block-stage1-${safe_name}"
+    file_type="block"
   fi
 
-  [[ -f "$final_file" ]] || : > "$final_file"
+  if [[ ! -f "$final_file" ]] || [[ ! -s "$final_file" ]]; then
+    if [[ "${RECONCILE_FORCE:-false}" == "true" ]]; then
+      warn "RECONCILE_FORCE=true: overwriting $src with empty reconciled output"
+      : > "$final_file"
+    else
+      fail "Refusing to overwrite $src: reconciled output is empty or missing ($final_file). Set RECONCILE_FORCE=true to override."
+    fi
+  fi
+
+  orig_lines="$(wc -l < "$src")"
+  final_lines="$(wc -l < "$final_file")"
+  pct="$(resolve_reconcile_drop_threshold "$file_type")"
+
+  if (( orig_lines > 100 )) && (( final_lines * 100 < orig_lines * (100 - pct) )); then
+    if [[ "${RECONCILE_FORCE:-false}" == "true" ]]; then
+      warn "RECONCILE_FORCE=true: overwriting $src despite line drop $orig_lines -> $final_lines (>${pct}% loss, file_type=${file_type})"
+    else
+      fail "Refusing to overwrite $src: line count would drop from $orig_lines to $final_lines (>${pct}% loss, file_type=${file_type}). Set RECONCILE_FORCE=true or DROP_THRESHOLD_${file_type^^}=<percent> to override."
+    fi
+  fi
+
   samefs_tmp="$(mktemp "${dir_name}/.${base_name}.reconcile.XXXXXX")"
   cp -- "$final_file" "$samefs_tmp"
   mv -- "$samefs_tmp" "$src"
@@ -694,6 +635,7 @@ print_console_summary() {
 
 main() {
   parse_args "$@"
+  init_run_dirs
   validate_inputs
   print_discovery_summary
   prepare_master_files
@@ -742,4 +684,6 @@ main() {
   print_console_summary
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi

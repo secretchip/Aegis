@@ -1,34 +1,58 @@
 #!/usr/bin/env bash
+# Merge, sort, deduplicate, and chunk the cleaned + reconciled domain/IP
+# files for either the block or allow side. Trusts upstream validation
+# (steps 1 and 1.5); does no validation of its own.
+#
+# Usage: 2.dedupe.sh --type {block|allow}
 set -euo pipefail
 
-TYPE="allow"
+TYPE=""
+while (($# > 0)); do
+  case "$1" in
+    --type)
+      [[ $# -ge 2 ]] || { echo "ERROR: --type needs a value" >&2; exit 2; }
+      TYPE="$2"
+      shift 2
+      ;;
+    -h|--help)
+      sed -n '2,/^set -euo/p' "$0" | sed 's/^# \?//; /^set -euo/d'
+      exit 0
+      ;;
+    *)
+      echo "ERROR: unknown arg: $1" >&2
+      exit 2
+      ;;
+  esac
+done
+
+case "$TYPE" in
+  block|allow) ;;
+  *) echo "ERROR: --type must be 'block' or 'allow'" >&2; exit 2 ;;
+esac
 
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-INPUT_DIR_BASE="$BASE_DIR/public_${TYPE}_lists"
-INPUT_DIR_MANUAL="$INPUT_DIR_BASE/input"
-INPUT_DIR_DOMAINS="$INPUT_DIR_BASE/domains"
-INPUT_DIR_IPS="$INPUT_DIR_BASE/ips"
+PUBLISHED_DIR="$BASE_DIR/public_${TYPE}_lists"
+INPUT_DIR_MANUAL="$BASE_DIR/var/intake/${TYPE}/input"
+INPUT_DIR_DOMAINS="$PUBLISHED_DIR/domains"
+INPUT_DIR_IPS="$PUBLISHED_DIR/ips"
 
-MANUAL_ARCHIVE_DIR="$BASE_DIR/scripts/logs/archive"
+MANUAL_ARCHIVE_DIR="$BASE_DIR/var/logs/dedupe-${TYPE}/archive"
 
-TEMP_DIR="$BASE_DIR/scripts/temp/${TYPE}"
-LOG_DIR="$BASE_DIR/scripts/logs"
+TEMP_DIR="$BASE_DIR/var/tmp/dedupe-${TYPE}"
+LOG_DIR="$BASE_DIR/var/logs/dedupe-${TYPE}"
 
 OUTPUT_DIR_DOMAINS="$INPUT_DIR_DOMAINS"
 OUTPUT_DIR_IPS="$INPUT_DIR_IPS"
-OUTPUT_DIR_REJECTED="$INPUT_DIR_BASE/rejected"
 
 DOMAINS_MERGED="$TEMP_DIR/all-unique-${TYPE}-domains.txt"
 IPS_MERGED="$TEMP_DIR/all-unique-${TYPE}-ips.txt"
-REJECTED_FILE="$TEMP_DIR/all-rejected-${TYPE}.txt"
 
 DOMAIN_PREFIX="$TEMP_DIR/chunk-${TYPE}-domains-"
 IP_PREFIX="$TEMP_DIR/chunk-${TYPE}-ips-"
-REJECTED_PREFIX="$TEMP_DIR/chunk-${TYPE}-rejected-"
 
 MAX_LINES=2000000
 
-mkdir -p "$TEMP_DIR" "$LOG_DIR" "$OUTPUT_DIR_DOMAINS" "$OUTPUT_DIR_IPS" "$OUTPUT_DIR_REJECTED" "$MANUAL_ARCHIVE_DIR"
+mkdir -p "$TEMP_DIR" "$LOG_DIR" "$OUTPUT_DIR_DOMAINS" "$OUTPUT_DIR_IPS" "$MANUAL_ARCHIVE_DIR"
 
 TIMESTAMP="$(date '+%Y%m%d-%H%M%S')"
 LOG_FILE="$LOG_DIR/dedupe-${TYPE}-${TIMESTAMP}.log"
@@ -45,7 +69,6 @@ echo "[*] INPUT_DIR_DOMAINS: $INPUT_DIR_DOMAINS"
 echo "[*] INPUT_DIR_IPS: $INPUT_DIR_IPS"
 echo "[*] OUTPUT_DIR_DOMAINS: $OUTPUT_DIR_DOMAINS"
 echo "[*] OUTPUT_DIR_IPS: $OUTPUT_DIR_IPS"
-echo "[*] OUTPUT_DIR_REJECTED: $OUTPUT_DIR_REJECTED"
 echo "[*] TEMP_DIR: $TEMP_DIR"
 echo "[*] =================================================="
 
@@ -94,72 +117,26 @@ echo "[*] Input file list:"
 printf '    - %s\n' "${INPUT_FILES[@]}"
 
 echo "[*] Cleaning previous temp/generated files..."
-rm -f "$DOMAINS_MERGED" "$IPS_MERGED" "$REJECTED_FILE"
-rm -f "${DOMAIN_PREFIX}"* "${IP_PREFIX}"* "${REJECTED_PREFIX}"*
-touch "$DOMAINS_MERGED" "$IPS_MERGED" "$REJECTED_FILE"
+rm -f "$DOMAINS_MERGED" "$IPS_MERGED"
+rm -f "${DOMAIN_PREFIX}"* "${IP_PREFIX}"*
+touch "$DOMAINS_MERGED" "$IPS_MERGED"
 
 echo "[*] Processing ${#INPUT_FILES[@]} input file(s)..."
 
+# Step 2 trusts upstream validation (steps 1 + 1.5). Pure routing here:
+# digit-only lines go to ips, everything else to domains. Manual inputs
+# placed in $INPUT_DIR_MANUAL must be pre-validated by step 1.
 grep -hv '^[[:space:]]*$' "${INPUT_FILES[@]}" \
-| awk -v domains_out="$DOMAINS_MERGED" -v ips_out="$IPS_MERGED" -v rejected_out="$REJECTED_FILE" '
-BEGIN {
-    domain_re = "^(\\*\\.)*([A-Za-z0-9-]+\\.)+[A-Za-z]{2,}$"
-    domain_extract_re = "(\\*\\.)*([A-Za-z0-9-]+\\.)+[A-Za-z]{2,}"
-    ipv4_re = "^([0-9]{1,3}\\.){3}[0-9]{1,3}$"
-    ipv4_port_re = "^([0-9]{1,3}\\.){3}[0-9]{1,3}:[0-9]+$"
-}
-
-function is_valid_ipv4(ip, parts, n, i) {
-    n = split(ip, parts, ".")
-    if (n != 4) return 0
-    for (i = 1; i <= 4; i++) {
-        if (parts[i] !~ /^[0-9]+$/) return 0
-        if (parts[i] < 0 || parts[i] > 255) return 0
-    }
-    return 1
-}
-
+| awk -v domains_out="$DOMAINS_MERGED" -v ips_out="$IPS_MERGED" '
 {
-    original = $0
     line = $0
-    matched = 0
-
     gsub(/^[[:space:]]+|[[:space:]]+$/, "", line)
+    if (line == "") next
 
-    if (line ~ /^www[0-9]+\./) {
-        candidate = line
-        sub(/^www[0-9]+\./, "", candidate)
-
-        if (match(candidate, domain_extract_re)) {
-            candidate_match = substr(candidate, RSTART, RLENGTH)
-            if (candidate_match ~ domain_re) {
-                line = candidate_match
-            }
-        }
-    }
-
-    if (line ~ ipv4_re && is_valid_ipv4(line)) {
+    if (line ~ /^[0-9.]+$/) {
         print line >> ips_out
-        matched = 1
-    }
-    else if (line ~ ipv4_port_re) {
-        ip_only = line
-        sub(/:[0-9]+$/, "", ip_only)
-        if (is_valid_ipv4(ip_only)) {
-            print ip_only >> ips_out
-            matched = 1
-        }
-    }
-    else if (match(line, domain_extract_re)) {
-        domain = substr(line, RSTART, RLENGTH)
-        if (domain ~ domain_re) {
-            print domain >> domains_out
-            matched = 1
-        }
-    }
-
-    if (!matched) {
-        print original >> rejected_out
+    } else {
+        print line >> domains_out
     }
 }
 '
@@ -167,21 +144,17 @@ function is_valid_ipv4(ip, parts, n, i) {
 echo "[*] Sorting and deduplicating outputs..."
 sort -u "$DOMAINS_MERGED" -o "$DOMAINS_MERGED"
 sort -u "$IPS_MERGED" -o "$IPS_MERGED"
-sort -u "$REJECTED_FILE" -o "$REJECTED_FILE"
 
 echo "[*] Post-processing counts:"
 DOMAIN_LINE_COUNT="$(wc -l < "$DOMAINS_MERGED")"
 IP_LINE_COUNT="$(wc -l < "$IPS_MERGED")"
-REJECTED_LINE_COUNT="$(wc -l < "$REJECTED_FILE")"
 
 echo "    Domains : $DOMAIN_LINE_COUNT"
 echo "    IPs     : $IP_LINE_COUNT"
-echo "    Rejected: $REJECTED_LINE_COUNT"
 
 echo "[*] Cleaning previous output files..."
 rm -f "$OUTPUT_DIR_DOMAINS"/hosts-"$TYPE"-part*.txt
 rm -f "$OUTPUT_DIR_IPS"/ips-"$TYPE"-part*.txt
-rm -f "$OUTPUT_DIR_REJECTED"/rejected-"$TYPE"-part*.txt
 
 echo "[*] Splitting domain list into chunks of max $MAX_LINES lines..."
 if [ -s "$DOMAINS_MERGED" ]; then
@@ -211,24 +184,9 @@ for file in "${IP_PREFIX}"*; do
 done
 echo "[*] Generated $j IP file(s)."
 
-echo "[*] Splitting rejected list into chunks of max $MAX_LINES lines..."
-if [ -s "$REJECTED_FILE" ]; then
-    split -l "$MAX_LINES" -d -a 3 "$REJECTED_FILE" "$REJECTED_PREFIX"
-fi
-
-echo "[*] Renaming rejected chunks dynamically..."
-k=0
-for file in "${REJECTED_PREFIX}"*; do
-    [ -e "$file" ] || continue
-    mv "$file" "$OUTPUT_DIR_REJECTED/rejected-${TYPE}-part${k}.txt"
-    k=$((k + 1))
-done
-echo "[*] Generated $k rejected file(s)."
-
 echo "[*] Done."
 echo "[*] Domain merged file:   $DOMAINS_MERGED"
 echo "[*] IP merged file:       $IPS_MERGED"
-echo "[*] Rejected lines file:  $REJECTED_FILE"
 
 echo
 echo "[*] Final domain output files:"
@@ -239,12 +197,8 @@ echo "[*] Final IP output files:"
 ls -lh "$OUTPUT_DIR_IPS"/ips-"$TYPE"-part*.txt 2>/dev/null || true
 
 echo
-echo "[*] Final rejected output files:"
-ls -lh "$OUTPUT_DIR_REJECTED"/rejected-"$TYPE"-part*.txt 2>/dev/null || true
-
-echo
 echo "[*] Final line counts:"
-wc -l "$DOMAINS_MERGED" "$IPS_MERGED" "$REJECTED_FILE" 2>/dev/null || true
+wc -l "$DOMAINS_MERGED" "$IPS_MERGED" 2>/dev/null || true
 
 echo "[*] Archiving manual input files..."
 
@@ -274,7 +228,6 @@ else
     echo "[*] No archive directory created. Log remains in: $LOG_FILE"
 fi
 
-touch $INPUT_DIR_MANUAL/input-"$TYPE"-.txt
 
 echo "[*] Script finished at: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "[*] =================================================="

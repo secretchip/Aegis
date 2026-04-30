@@ -1,0 +1,88 @@
+name: Publish daily release
+
+# Triggers when published lists change on main — covers both the auto-merged
+# daily-update PR and any hand-pushed list changes. Manual trigger available.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public_block_lists/**'
+      - 'public_allow_lists/**'
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute date tag
+        id: tag
+        run: |
+          tag="release-$(date -u +%Y%m%d)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Build tarballs
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+
+          tar -czf dist/aegis-block-lists.tar.gz \
+            public_block_lists/manifest.json \
+            public_block_lists/domains \
+            public_block_lists/ips
+
+          tar -czf dist/aegis-allow-lists.tar.gz \
+            public_allow_lists/manifest.json \
+            public_allow_lists/domains \
+            public_allow_lists/ips
+
+          cp public_block_lists/manifest.json dist/block-manifest.json
+          cp public_allow_lists/manifest.json dist/allow-manifest.json
+
+          ( cd dist && sha256sum * > sha256sums.txt )
+          ls -lh dist/
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          tag='${{ steps.tag.outputs.tag }}'
+          # Skip if a release with this tag already exists (e.g. multiple
+          # pushes on the same UTC day). The first run wins; subsequent
+          # pushes update the underlying refs without re-tagging.
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists — re-uploading assets."
+            gh release upload "$tag" dist/* --clobber
+          else
+            gh release create "$tag" \
+              --title "Daily list release $tag" \
+              --notes "Automated release. See manifests for chunk URLs and SHA-256 sums." \
+              dist/*
+          fi
+
+      - name: Prune old releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KEEP: '30'
+        run: |
+          set -euo pipefail
+          # Keep the latest $KEEP release-* releases; delete the rest.
+          gh release list --limit 200 --json tagName,createdAt \
+            --jq '[ .[] | select(.tagName | startswith("release-")) ] | sort_by(.createdAt) | reverse' \
+            | jq -r ".[$KEEP:][]?.tagName" \
+            | while read -r old_tag; do
+                [[ -n "$old_tag" ]] || continue
+                echo "Deleting old release: $old_tag"
+                gh release delete "$old_tag" --yes --cleanup-tag
+              done
