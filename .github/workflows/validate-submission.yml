@@ -1,0 +1,224 @@
+name: Validate submission
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+  pull_request:
+    paths:
+      - 'submissions/**'
+      - '.github/scripts/validate.py'
+      - '.github/scripts/validate-issue-submission.py'
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: write   # for the auto-PR step on `approved` label
+
+concurrency:
+  group: submission-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  validate-issue:
+    if: |
+      github.event_name == 'issues'
+      && (contains(toJSON(github.event.issue.labels.*.name), 'submission')
+          || contains(toJSON(github.event.issue.labels.*.name), 'false-positive'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      validation_summary: ${{ steps.run.outputs.validation_summary }}
+      valid_count: ${{ steps.run.outputs.valid_count }}
+      invalid_count: ${{ steps.run.outputs.invalid_count }}
+      has_valid: ${{ steps.run.outputs.has_valid }}
+      side: ${{ steps.run.outputs.side }}
+      valid_path: ${{ steps.run.outputs.valid_path }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate submission entries
+        id: run
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+        run: |
+          mkdir -p var/state
+          python3 .github/scripts/validate-issue-submission.py > /tmp/comment.md
+          # Trim leading blank line (from print) so the comment renders cleanly.
+          sed -i '/./,$!d' /tmp/comment.md
+
+      - name: Post / update validation comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          # Find an existing bot comment that begins with our marker, edit it
+          # in place (otherwise users get spammed on every edit). The marker
+          # is the H3 line "Validation report — issue #N".
+          marker="### Validation report — issue #${ISSUE_NUMBER}"
+          existing_id=$(
+            gh api "repos/${{ github.repository }}/issues/${ISSUE_NUMBER}/comments" \
+              --jq ".[] | select(.user.login == \"github-actions[bot]\") | select(.body | startswith(\"${marker}\")) | .id" \
+              | head -n 1
+          )
+          if [[ -n "$existing_id" ]]; then
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$existing_id" \
+              -f body="$(cat /tmp/comment.md)"
+          else
+            gh issue comment "$ISSUE_NUMBER" --body-file /tmp/comment.md
+          fi
+
+      - name: Apply auto-labels based on validation result
+        if: steps.run.outputs.suggested_label != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          SUGGESTED: ${{ steps.run.outputs.suggested_label }}
+        run: |
+          gh issue edit "$ISSUE_NUMBER" --remove-label needs-validation || true
+          for l in valid-submission needs-fix needs-info; do
+            gh issue edit "$ISSUE_NUMBER" --remove-label "$l" || true
+          done
+          gh issue edit "$ISSUE_NUMBER" --add-label "$SUGGESTED" || true
+
+      - name: Stash validated entries for the approval step
+        if: steps.run.outputs.has_valid == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: submission-${{ github.event.issue.number }}-valid
+          path: ${{ steps.run.outputs.valid_path }}
+          if-no-files-found: ignore
+          retention-days: 30
+
+  approve-issue:
+    # When a maintainer applies the `approved` label, open a PR adding the
+    # validated entries from this issue to submissions/<side>.txt — a
+    # separate folder reviewed offline by the maintainer who then moves
+    # accepted entries into their LOCAL build repo's sources/pins/.
+    if: |
+      github.event_name == 'issues'
+      && github.event.action == 'labeled'
+      && github.event.label.name == 'approved'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-validate (recompute the valid_path on this fresh checkout)
+        id: run
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+        run: |
+          mkdir -p var/state
+          python3 .github/scripts/validate-issue-submission.py > /dev/null
+
+      - name: Append validated entries to submissions/<side>.txt
+        if: steps.run.outputs.has_valid == 'true'
+        id: append
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_USER: ${{ github.event.issue.user.login }}
+          SIDE: ${{ steps.run.outputs.side }}
+          VALID_PATH: ${{ steps.run.outputs.valid_path }}
+        run: |
+          set -euo pipefail
+          submission_file="submissions/${SIDE}.txt"
+          mkdir -p submissions
+          # Seed with a header if the file is empty / new.
+          if [[ ! -s "$submission_file" ]]; then
+            cat > "$submission_file" <<HEADER
+          # AEGIS-DNS — pending ${SIDE^^}-side submissions
+          # Maintainer reviews and moves accepted entries into the LOCAL
+          # build repo's sources/pins/${SIDE}.txt, then deletes the integrated
+          # lines from this file (commit + push to public).
+          HEADER
+          fi
+          {
+            echo
+            echo "# From issue #${ISSUE_NUMBER} submitted by @${ISSUE_USER} on $(date -u +%Y-%m-%d)"
+            cat "$VALID_PATH"
+          } >> "$submission_file"
+          echo "submission_file=$submission_file" >> "$GITHUB_OUTPUT"
+
+      - name: Open PR with the appended entries
+        if: steps.run.outputs.has_valid == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "submissions: append from issue #${{ github.event.issue.number }}"
+          branch: auto/submission-${{ github.event.issue.number }}
+          delete-branch: true
+          title: "submissions(${{ steps.run.outputs.side }}): from issue #${{ github.event.issue.number }}"
+          body: |
+            Automated PR appending validated entries from issue #${{ github.event.issue.number }} to `submissions/${{ steps.run.outputs.side }}.txt`.
+
+            ⚠️ **These entries are NOT yet pinned.** They sit in `submissions/`
+            for the maintainer to review and integrate into the local build
+            repo's `sources/pins/${{ steps.run.outputs.side }}.txt`. Once
+            integrated, the maintainer will delete the merged entries from
+            `submissions/${{ steps.run.outputs.side }}.txt` (separate commit).
+
+            - Submitter: @${{ github.event.issue.user.login }}
+            - Side: `${{ steps.run.outputs.side }}`
+            - Valid entries appended: ${{ steps.run.outputs.valid_count }}
+
+            Closes #${{ github.event.issue.number }}
+          labels: |
+            automated
+            submission-pending
+            type:${{ steps.run.outputs.side }}
+
+  validate-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate every value line in submissions/*.txt
+        run: |
+          set -euo pipefail
+          fail=0
+          for f in submissions/block.txt submissions/allow.txt; do
+            [[ -f "$f" ]] || continue
+            # Strip header/full-line comments + trailing comments, then run each
+            # remaining value through the validator. Reject the PR on any failure.
+            python3 - "$f" <<'PY'
+          import re, sys
+          from pathlib import Path
+          here = Path(__file__).resolve().parent if False else Path('.github/scripts')
+          sys.path.insert(0, str(here))
+          from validate import load_or_fetch_iana_tlds, validate_entry
+          tlds = load_or_fetch_iana_tlds(Path('var/state/iana-tlds.txt'))
+          path = Path(sys.argv[1])
+          rc = 0
+          trail = re.compile(r'\s*#.*$')
+          for n, raw in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
+              s = raw.strip()
+              if not s or s.startswith('#'):
+                  continue
+              s = trail.sub('', s).strip()
+              if not s:
+                  continue
+              r = validate_entry(s, tlds)
+              if not r.valid:
+                  print(f"::error file={path}::line {n}: {r.reason}: {raw}")
+                  rc = 1
+          sys.exit(rc)
+          PY
+          done

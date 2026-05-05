@@ -15,6 +15,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Capture the run start time so finalize-build can compute total duration.
+mkdir -p "$ROOT_DIR/var/state"
+date -u +%Y-%m-%dT%H:%M:%S+00:00 > "$ROOT_DIR/var/state/build-start.iso"
 
 bash "$SCRIPT_DIR/download-lists.sh" --type block
 bash "$SCRIPT_DIR/download-lists.sh" --type allow
@@ -22,12 +27,21 @@ bash "$SCRIPT_DIR/download-lists.sh" --type allow
 python3 "$SCRIPT_DIR/cleanup.py" --type block
 python3 "$SCRIPT_DIR/cleanup.py" --type allow
 
+# Validate human-curated pins (sources/pins/{block,allow}.txt) and emit
+# them as another manual-input file for dedupe to merge.
+python3 "$SCRIPT_DIR/extract-pins.py"
+
 bash "$SCRIPT_DIR/reconcile.sh"
 
 bash "$SCRIPT_DIR/dedupe.sh" --type block
 bash "$SCRIPT_DIR/dedupe.sh" --type allow
 
 bash "$SCRIPT_DIR/verify.sh"
+
+# Compute final stats, prepend ASCII headers to each public chunk,
+# and refresh the README stats block. Runs before manifest so the
+# manifest's sha256 sums reflect the headered files.
+python3 "$SCRIPT_DIR/finalize-build.py"
 
 python3 "$SCRIPT_DIR/manifest.py"
 python3 "$SCRIPT_DIR/consumer-config.py"

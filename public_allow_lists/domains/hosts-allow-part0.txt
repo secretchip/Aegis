@@ -1,3 +1,20 @@
+##############################################################################
+# AEGIS-DNS published list — allow / domains
+# Chunk          : hosts-allow-part0.txt (1 of 1)
+# Lines in chunk : 21,438
+#
+# Block domains  : 45,759,524 across 23 chunk(s)
+# Block IPs      : 209,298 across 1 chunk(s)
+# Allow domains  : 21,438 across 1 chunk(s)
+# Allow IPs      : 21 across 1 chunk(s)
+# Pinned (block) : 0
+# Pinned (allow) : 0
+#
+# Build started  : 2026-05-03T22:09:50Z
+# Build duration : 17m 36s
+# Manifest       : https://raw.githubusercontent.com/secretchip/AEGIS-DNS/refs/heads/main/public_allow_lists/manifest.json
+##############################################################################
+
 *.*.*.quickconnect.to
 *.*.cazacubogdan.com
 *.*.epam.com
@@ -10,6 +27,7 @@
 *.buymeacoffee.com
 *.cazacubogdan.com
 *.cazacubogdan.direct.quickconnect.to
+*.claude.ai
 *.crowdsec.net
 *.debian.org
 *.delhaize.be
@@ -29,6 +47,7 @@
 *.iobit.com
 *.knowledgehut.com
 *.leanplum.com
+*.luxmed.pl
 *.metric.gstatic.com
 *.netbird.io
 *.nflxext.com
@@ -558,7 +577,6 @@
 9u9.de
 9url.net
 9vpsta1.com
-_https._tcp.download.docker.com
 a-3.ru
 a-airasia-001-gyf12.insnw.net
 a-api.anthropic.com
@@ -2806,7 +2824,6 @@ c.s-microsoft.com
 c.seznam.cz
 c.spiegel.de
 c.trackmytarget.com
-c.trello.com
 c.webengage.com
 c0.wp.com
 c00.adobe.com
@@ -7331,6 +7348,7 @@ fasttory.com
 fasturl.link
 fastweb.com.cn
 fastwebcdn.com
+fattoincasadabenedetta.link
 faturl.com
 fav.me
 fave.co
@@ -11195,6 +11213,7 @@ lnk.direct
 lnk.fd-serv.com
 lnk.gd
 lnk.growflow.com
+lnk.ink
 lnk.jo
 lnk.ke
 lnk.ly
@@ -11394,6 +11413,7 @@ lurl.org
 lutendo.tech
 luto.lol
 lutre.it
+luxmed.pl
 lvbet.pl
 lvclinks.com
 lvfst.com
@@ -16081,6 +16101,7 @@ shortlk.co
 shortlk.com
 shortll.com
 shortlnk.app
+shortlnk.co
 shortlnk.xyz
 shortlr.com
 shortlurl.com
@@ -18700,6 +18721,7 @@ u4r.net
 u4y.ch
 u6e.de
 u99.pro
+u9x.wtf
 uabio.me
 uafly.co
 ual.fyi
@@ -21360,7 +21382,6 @@ znym.co
 znz.kr
 zo.cm
 zobzob.com
-zodiac-app-staging.firebaseapp.com
 zoho.com
 zoho.in
 zoho.to

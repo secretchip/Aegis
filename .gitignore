@@ -1,12 +1,27 @@
+# Editor / IDE state
+/.claude/
+/.vscode/
 .gitignore
 .gitattributes
 CLAUDE.md
-/.claude/
-/consumers/
-/docs/
-/.vscode/
-/system-data/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Pipeline runtime state — regenerated each run, never edited by hand
 /pipeline/logs/
 /pipeline/temp/
-/pipeline/debug/
 /var/
+
+# Local-only debug scripts (not part of the published pipeline)
+/pipeline/debug/
+
+# Legacy holdover (sibling-repo copies have been deleted; ignored as
+# defense-in-depth in case anything ever recreates the path)
+/system-data/
+/var/
+/pipeline/
+/docs/
+/consumers/
+/sources/

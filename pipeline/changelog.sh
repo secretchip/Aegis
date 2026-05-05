@@ -46,7 +46,8 @@ for type in block allow; do
     if (( ${#files[@]} > 0 )); then
       # Each chunk is locally sorted; ls -v concatenates them in numeric
       # order (part0, part1, …, part10). Result is globally sorted.
-      ls -v "${files[@]}" | xargs cat >> "$cur_tmp"
+      # Strip ASCII '#' headers so they don't appear in the diff.
+      ls -v "${files[@]}" | xargs cat | awk 'NF && !/^[[:space:]]*#/' >> "$cur_tmp"
     fi
 
     if [[ -f "$cur" ]]; then

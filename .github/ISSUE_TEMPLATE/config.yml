@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/secretchip/AEGIS-DNS/blob/main/docs/manual.md
+    about: How the pipeline works, file formats, and troubleshooting.
+  - name: Discussions
+    url: https://github.com/secretchip/AEGIS-DNS/discussions
+    about: Open-ended questions, design discussion.

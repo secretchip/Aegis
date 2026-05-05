@@ -573,8 +573,10 @@ overwrite_original() {
     fi
   fi
 
-  orig_lines="$(wc -l < "$src")"
-  final_lines="$(wc -l < "$final_file")"
+  # Count *content* lines (skip '#' headers and blank lines) so chunk
+  # banners on the previously-published file don't inflate orig_lines.
+  orig_lines="$(awk 'NF && !/^[[:space:]]*#/' "$src" | wc -l)"
+  final_lines="$(awk 'NF && !/^[[:space:]]*#/' "$final_file" | wc -l)"
   pct="$(resolve_reconcile_drop_threshold "$file_type")"
 
   if (( orig_lines > 100 )) && (( final_lines * 100 < orig_lines * (100 - pct) )); then

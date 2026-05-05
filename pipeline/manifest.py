@@ -53,9 +53,13 @@ def sha256_of(path: Path) -> str:
 
 
 def count_lines(path: Path) -> int:
+    """Count *content* lines — skip '#' header lines and blank lines."""
     n = 0
     with path.open("rb") as fh:
-        for _ in fh:
+        for line in fh:
+            stripped = line.lstrip()
+            if not stripped or stripped.startswith(b"#"):
+                continue
             n += 1
     return n
 

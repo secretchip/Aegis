@@ -132,6 +132,8 @@ grep -hv '^[[:space:]]*$' "${INPUT_FILES[@]}" \
     line = $0
     gsub(/^[[:space:]]+|[[:space:]]+$/, "", line)
     if (line == "") next
+    # Drop ASCII header/comment lines (upstream chunks may carry a #-banner).
+    if (line ~ /^#/) next
 
     if (line ~ /^[0-9.]+$/) {
         print line >> ips_out

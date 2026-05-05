@@ -1,0 +1,75 @@
+name: "🛑 Submit domains to block"
+description: Suggest one or more domains to add to the AEGIS-DNS blocklist.
+title: "[block] "
+labels: [submission, type:block, needs-validation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to propose domains for blocking.
+        For false-positive corrections, use the **🟢 Report false positive** form instead.
+
+        After you submit, a validation bot will post a comment with the per-line result
+        (✓ valid / ✗ invalid + reason). A maintainer will then review the evidence
+        and apply the `approved` label to merge them into `sources/pins/block.txt`.
+  - type: textarea
+    id: domains
+    attributes:
+      label: Domains to block
+      description: |
+        One per line. Plain FQDNs (`example.com`), leading wildcards (`*.example.com`),
+        or IPv4 addresses (`1.2.3.4`).
+        Trailing comments are allowed: `evil.com   # phishing 2026-05-03`.
+      placeholder: |
+        evil-phish.example.com
+        *.adnetwork.example.com
+        1.2.3.4
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - phishing / scam
+        - malware / C2
+        - tracker / analytics
+        - advertising
+        - cryptojacker
+        - typosquat
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: |
+        Threat-report URLs, screenshots, registrar data, traffic logs — anything that
+        helps a maintainer verify quickly. A single complaint without corroboration is
+        unlikely to be accepted.
+      placeholder: |
+        - https://urlhaus.abuse.ch/url/1234567/
+        - https://www.virustotal.com/gui/domain/evil-phish.example.com/detection
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: How can we follow up if needed?
+      description: GitHub handle is fine. Optional.
+      placeholder: "@your-handle"
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Pre-submit checklist
+      options:
+        - label: I checked that none of these domains are already on the published blocklist.
+          required: false
+        - label: I am not the operator of these domains (or, if I am, I am declaring intent to take them down).
+          required: false
+        - label: I understand the maintainer reviews and may reject submissions without explanation.
+          required: true

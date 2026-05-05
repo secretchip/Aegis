@@ -4,12 +4,34 @@
 [![Last commit](https://img.shields.io/github/last-commit/secretchip/AEGIS-DNS)](https://github.com/secretchip/AEGIS-DNS/commits/main)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
 
+[![Block domains](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsecretchip%2FAEGIS-DNS%2Frefs%2Fheads%2Fmain%2Fpublic_block_lists%2Fbadge-domains.json)](public_block_lists/manifest.json)
+[![Block IPs](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsecretchip%2FAEGIS-DNS%2Frefs%2Fheads%2Fmain%2Fpublic_block_lists%2Fbadge-ips.json)](public_block_lists/manifest.json)
+[![Allow domains](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsecretchip%2FAEGIS-DNS%2Frefs%2Fheads%2Fmain%2Fpublic_allow_lists%2Fbadge-domains.json)](public_allow_lists/manifest.json)
+[![Allow IPs](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsecretchip%2FAEGIS-DNS%2Frefs%2Fheads%2Fmain%2Fpublic_allow_lists%2Fbadge-ips.json)](public_allow_lists/manifest.json)
+[![Pins](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsecretchip%2FAEGIS-DNS%2Frefs%2Fheads%2Fmain%2Fpublic_block_lists%2Fbadge-pins.json)](sources/pins/)
+[![Last build](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsecretchip%2FAEGIS-DNS%2Frefs%2Fheads%2Fmain%2Fpublic_block_lists%2Fbadge-build.json)](https://github.com/secretchip/AEGIS-DNS/actions/workflows/daily-update.yml)
+
 Curated DNS allowlist + blocklist pipeline. Aggregates many public source
 lists, validates and deduplicates them, reconciles allow/block conflicts,
 and publishes the result as flat text files for use by DNS filters.
 The lists powers [`dns.secretchip.net`](https://dns.secretchip.net) and
 are equally usable by AdGuard Home, Pi-hole, Unbound, dnsmasq, or any
 other host-list-based filter.
+
+## Stats
+
+<!-- stats:start -->
+_Last build: **2026-05-03 22:09 UTC**, took 17m 36s._
+
+| List  | Domains                | IPs                    | Chunks (domains / IPs) |
+| ----- | ---------------------: | ---------------------: | ---------------------: |
+| block | 45,759,524 | 209,298 | 23 / 1 |
+| allow | 21,438 | 21 | 1 / 1 |
+
+Manually pinned: **0** block, **0** allow.
+<!-- stats:end -->
+
+(_The block above is regenerated automatically by `pipeline/finalize-build.py` at the end of every pipeline run._)
 
 ## Consume the lists
 

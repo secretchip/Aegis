@@ -1,0 +1,56 @@
+name: "📜 Submit a list URL"
+description: Suggest an entire upstream hosts file or domain list to ingest.
+title: "[list] "
+labels: [submission, type:list, needs-validation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this if you want to suggest a whole list — typically a hosts-file URL
+        maintained by another community. On approval the URL is appended to
+        `sources/{block,allow}_urls.txt` and ingested by the next pipeline run.
+  - type: dropdown
+    id: side
+    attributes:
+      label: Add to which side?
+      options:
+        - block
+        - allow
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: List URL
+      description: Direct link to the raw text/hosts file. HTTPS strongly preferred.
+      placeholder: https://example.org/hosts.txt
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What does this list cover?
+      description: |
+        Scope (ads, tracking, malware, regional) + maintainer + update frequency.
+    validations:
+      required: true
+  - type: input
+    id: license
+    attributes:
+      label: License
+      description: |
+        The list must be redistributable. Common: CC0, CC-BY, GPL, public domain.
+      placeholder: e.g. CC0
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Pre-submit checklist
+      options:
+        - label: The list is publicly available without authentication.
+          required: true
+        - label: The license permits redistribution / mirroring.
+          required: true
+        - label: I am not the operator of the upstream — or I am, and I'm OK with mirroring.
+          required: false

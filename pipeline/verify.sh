@@ -68,15 +68,16 @@ fail() {
 }
 
 count_glob() {
-  # Sum line counts across files matching <dir>/<glob>; missing files = 0.
-  # Two-arg form so $dir can contain whitespace without word-splitting the
-  # glob pattern.
+  # Sum *content* line counts across files matching <dir>/<glob>; missing
+  # files = 0. Skips '#' header banners AND blank lines so headers don't
+  # inflate verify totals. Two-arg form so $dir can contain whitespace
+  # without word-splitting the glob pattern.
   local dir="$1" glob="$2"
   local total=0 f
   shopt -s nullglob
   for f in "$dir"/$glob; do
     [[ -f "$f" ]] || continue
-    total=$((total + $(wc -l < "$f")))
+    total=$((total + $(awk 'NF && !/^[[:space:]]*#/' "$f" | wc -l)))
   done
   shopt -u nullglob
   echo "$total"

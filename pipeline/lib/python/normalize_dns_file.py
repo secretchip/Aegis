@@ -43,6 +43,10 @@ def main() -> int:
         with args.input.open("r", encoding="utf-8", errors="ignore") as fin, \
                 args.output.open("w", encoding="utf-8") as fout:
             for raw in fin:
+                # Skip header/comment lines from upstream chunks before they
+                # land in the rejection log as bogus "internal_whitespace".
+                if raw.lstrip().startswith("#"):
+                    continue
                 input_lines += 1
                 original = raw.rstrip("\n").rstrip("\r")
                 result = validate_entry(raw, tlds)

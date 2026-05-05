@@ -1,0 +1,43 @@
+name: "🚨 Report false positive"
+description: A domain currently on the blocklist that should not be blocked.
+title: "[false-positive] "
+labels: [false-positive, type:allow, needs-validation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Approved false-positive reports get added to `sources/pins/allow.txt`,
+        which guarantees the domain is allowed regardless of upstream block sources.
+  - type: textarea
+    id: domains
+    attributes:
+      label: Wrongly-blocked domain(s)
+      description: One per line. FQDNs or `*.example.com` wildcards.
+      placeholder: |
+        my-bank.example.com
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: justification
+    attributes:
+      label: Why is this a false positive?
+      description: |
+        Provide enough context for a maintainer to verify (the service, who runs it,
+        why it appeared on a blocklist, etc.).
+    validations:
+      required: true
+  - type: input
+    id: encountered
+    attributes:
+      label: Where did you encounter the block?
+      description: e.g. "Pi-hole using AEGIS-DNS lists", "Technitium DNS Server".
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Pre-submit checklist
+      options:
+        - label: I have verified the domain is currently blocked by AEGIS-DNS lists.
+          required: true

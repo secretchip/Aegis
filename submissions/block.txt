@@ -1,0 +1,15 @@
+# AEGIS-DNS — pending BLOCK-side submissions
+#
+# This file is owned by the public repo's validate-submission workflow.
+# When a maintainer applies the `approved` label on a submission issue, the
+# workflow opens a PR appending the validated entries below, citing the
+# originating issue.
+#
+# These entries are NOT pinned. The maintainer reviews submissions here and
+# manually moves accepted entries into the LOCAL build repo's
+# `sources/pins/block.txt`. After integrating, the maintainer removes the
+# integrated lines from this file (commit + push to public repo).
+#
+# Format: validated FQDN / wildcard / IPv4, one per line, comments above
+# (citing the issue and submitter). The pipeline never reads this file —
+# the only consumer is the human maintainer.
