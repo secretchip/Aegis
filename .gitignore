@@ -9,14 +9,6 @@ CLAUDE.md
 __pycache__/
 *.pyc
 
-# Pipeline runtime state — regenerated each run, never edited by hand
-/pipeline/logs/
-/pipeline/temp/
-/var/
-
-# Local-only debug scripts (not part of the published pipeline)
-/pipeline/debug/
-
 # Legacy holdover (sibling-repo copies have been deleted; ignored as
 # defense-in-depth in case anything ever recreates the path)
 /system-data/
