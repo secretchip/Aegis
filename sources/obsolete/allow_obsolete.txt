@@ -1,1 +1,0 @@
-https://raw.githubusercontent.com/ookangzheng/blahdns/master/hosts/whitelist.txt
