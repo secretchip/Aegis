@@ -1,17 +1,17 @@
 ##############################################################################
 # AEGIS-DNS published list — allow / domains
 # Chunk          : hosts-allow-part0.txt (1 of 1)
-# Lines in chunk : 21,438
+# Lines in chunk : 21,437
 #
-# Block domains  : 45,759,524 across 23 chunk(s)
-# Block IPs      : 209,298 across 1 chunk(s)
-# Allow domains  : 21,438 across 1 chunk(s)
+# Block domains  : 45,802,356 across 23 chunk(s)
+# Block IPs      : 218,984 across 1 chunk(s)
+# Allow domains  : 21,437 across 1 chunk(s)
 # Allow IPs      : 21 across 1 chunk(s)
 # Pinned (block) : 0
 # Pinned (allow) : 0
 #
-# Build started  : 2026-05-03T22:09:50Z
-# Build duration : 17m 36s
+# Build started  : 2026-05-06T09:39:39Z
+# Build duration : 19m 20s
 # Manifest       : https://raw.githubusercontent.com/secretchip/AEGIS-DNS/refs/heads/main/public_allow_lists/manifest.json
 ##############################################################################
 
@@ -25,6 +25,7 @@
 *.anthropic.com
 *.aws.a2z.com
 *.buymeacoffee.com
+*.capcut.com
 *.cazacubogdan.com
 *.cazacubogdan.direct.quickconnect.to
 *.claude.ai
@@ -42,6 +43,7 @@
 *.github.com
 *.gitlab.com
 *.glovoapp.com
+*.heygen.com
 *.hichina.com
 *.ido.ro
 *.iobit.com
@@ -699,6 +701,7 @@ abr.ge
 abr.ru
 abr.to
 abre.ae
+abre.ai
 abre.pub
 abrir.link
 abroad-links.com
@@ -811,6 +814,7 @@ adaymag.co
 adb.ug
 adbaw.com
 adbl.co
+adblock.turtlecute.org
 adbly.co
 adc.api.nine.com.au
 adcell.com
@@ -1285,7 +1289,6 @@ anrdoezrs.net
 answ.xyz
 answers.microsoft.com
 anthos.googleapis.com
-anthropic.com
 antinawala.team
 antonellapouncedcrewels.com
 anura.io
@@ -1359,6 +1362,7 @@ api.github.com
 api.glovoapp.com
 api.gm.com
 api.gotinder.com
+api.helpshift.com
 api.here.com
 api.heylink.com
 api.hostip.info
@@ -1388,6 +1392,7 @@ api.pushbullet.com
 api.pushwoosh.com
 api.rlje.net
 api.rudderstack.com
+api.runwayml.com
 api.rustdesk.com
 api.samsungcloud.com
 api.samsungfind.com
@@ -1463,6 +1468,7 @@ app.netbird.io
 app.philz.us
 app.plex.tv
 app.qq.com
+app.runwayml.com
 app.sephora.com
 app.shorteneo.com
 app.skiff.org
@@ -1481,6 +1487,7 @@ app3.takasbank.web.tr
 appbitly.com
 appboot.netflix.com
 appboy-images.com
+appcloud.mcafee.com
 appcurt.com
 apple-dns.net
 apple.co
@@ -2344,7 +2351,6 @@ bitly.im
 bitly.is
 bitly.kr
 bitly.mobi
-bitly.net
 bitly.pk
 bitly.pw
 bitly.team
@@ -3067,6 +3073,7 @@ cdn.embedly.com
 cdn.exponea.com
 cdn.fbsbx.com
 cdn.flipboard.com
+cdn.fwupd.org
 cdn.gigya.com
 cdn.gigya.commes.122.2o7.net
 cdn.gotraffic.net
@@ -3213,6 +3220,7 @@ checkout.bambora.com
 checkout.buzzoid.com
 checkout.gateline.net
 checkout.iherb.com
+checkout.link.com
 checkout.paddle.com
 checkout.wirecard.com
 checkshorturl.bio
@@ -3510,6 +3518,7 @@ clients5.google.com
 clients6.google.com
 clientsc.alipay.com
 clientstream.launchdarkly.com
+clik.now
 clikk.in
 clikly.link
 clikr.ir
@@ -3897,7 +3906,6 @@ crickcounty.com
 criptointercambio.com
 crisp.to
 critch.it
-criterionm.com
 crizons.pro
 crl.comodo.net
 crl3.digicert.com
@@ -4011,7 +4019,6 @@ cut.lu
 cut.ovh
 cut.pe
 cut.sk
-cut.vin
 cut2.eu
 cutdown.link
 cute.link
@@ -4299,7 +4306,6 @@ degussa-bank.de
 dehe.ir
 deheh.ir
 deine-volksbank.de
-delhaize.be
 deli.bz
 delicious.com
 deliverable.email
@@ -4421,7 +4427,6 @@ digitalsnax.com
 digitize-umfrage.at
 digits.com
 diju.digital
-dik.si
 dilbert.ns.cloudflare.com
 dino.tzero.com
 dir-apis.samsungdm.com
@@ -7640,7 +7645,6 @@ fptlink.com
 fr.aliexpress.com
 fr135.net
 frama.link
-frame.work
 francosolerio.com
 frankenberger-bank.de
 frankfurter-sparkasse.de
@@ -7711,7 +7715,6 @@ ftx.com
 fu.ag
 fubon.com
 fuggerbank-infoportal.de
-fukt.link
 fumacrom.com
 fund.school
 fundgop.co
@@ -7858,7 +7861,6 @@ gen.cat
 generali.it
 generalmotorscorporation.sc.omtrdc.net
 generatemyqr.com
-generating.link
 generatortools-five.vercel.app
 geni.us
 genie.co.kr
@@ -7995,7 +7997,6 @@ girlte.ch
 git.ad
 git.io
 git.new
-github.blog
 github.co
 github.com
 github.hubspot.com
@@ -8132,6 +8133,7 @@ go.llycloud.com
 go.lsb.nrw
 go.ltdo.org
 go.lu-h.de
+go.ly
 go.microsoft.com
 go.mybusinessacademy.ph
 go.nasa.gov
@@ -8715,8 +8717,10 @@ hlink.cc
 hls.ted.com
 hlsn.ca
 hlth-e.net
+hm.ru
 hmd.bio
 hmf.li
+hmp.me
 hmt.ai
 hncb.com.tw
 hncinnamon.com
@@ -9609,7 +9613,6 @@ invisioncode.com
 invitationlinks.com
 invpy.com
 invy.in
-inx.lv
 iny.me
 inyuy.com
 io.clickguard.com
@@ -10035,6 +10038,7 @@ keenetic.link
 keenetic.pro
 keepalive.gotinder.com
 keepo.bio
+keepo.io
 keepsolid.com
 keetl.com
 kelkoogroup.net
@@ -10335,7 +10339,6 @@ kuta.ir
 kutlink.com
 kutt.acorninsure.co.uk
 kutt.appinn.com
-kutt.ar-email.com.br
 kutt.cengo.dev
 kutt.chatforma.com
 kutt.co.in
@@ -10593,10 +10596,8 @@ lihi.tv
 lihi.vip
 lihi1.cc
 lihi1.me
-lihi2.cc
 lihi2.com
 lihi2.me
-lihi3.com
 lihi3.me
 lihipro.com
 lihivip.com
@@ -10651,7 +10652,6 @@ link-safe.co
 link-trim.com
 link-trim.in
 link-z.net
-link.ac
 link.adtidy.org
 link.alfamonkey.com
 link.ameerusa.com
@@ -10826,7 +10826,6 @@ linkerr.io
 linkexpander.com
 linkezurl.com
 linkf.su
-linkfast.me
 linkfly.app
 linkfly.me
 linkfly.to
@@ -11086,7 +11085,6 @@ linkwizz.com
 linkxl.de
 linky.cc
 linky.is
-linky.ph
 linky31.com
 linkybe.com
 linkye.net
@@ -11103,7 +11101,6 @@ linqry.com
 linqup.in
 lintlink.com
 linux.mom
-linuxize.com
 linxonly.com
 lionl.ink
 liqpay.com
@@ -11252,6 +11249,7 @@ lnkx.link
 lnky.fr
 lnky.jp
 lnky.pk
+lnkz.at
 lnkz.my
 lnkz.us
 lnkzap.com
@@ -11262,7 +11260,6 @@ lnq.is
 lnsrt.com
 lnst.eu
 lnv.gy
-lnwlink.com
 lnwurl.com
 lo.ge
 load.sst.clinica-sante.com
@@ -11413,7 +11410,6 @@ lurl.org
 lutendo.tech
 luto.lol
 lutre.it
-luxmed.pl
 lvbet.pl
 lvclinks.com
 lvfst.com
@@ -12066,7 +12062,6 @@ mondoagram.com
 monese.com
 moneta.ru
 monetag.com
-monetiza.co
 money.comepay.ru
 money.idram.am
 money.mail.ru
@@ -12217,6 +12212,7 @@ mtw.so
 mtws.cc
 mtxt.xyz
 muangay.info
+mub.me
 mucho.li
 muenchner-bank.de
 mueritz-sparkasse.de
@@ -12375,6 +12371,7 @@ myprivateproxies.org
 myqcloud.com
 myqlixellink.com
 myqrcode.mobi
+myrxbmember.info
 mysexychat.live
 myshopify.com
 myshopurl.com
@@ -13415,6 +13412,8 @@ p.st
 p.typekit.net
 p04e.t.en25.com
 p1.rs
+p16-capcut-cms-sg.ibyteimg.com
+p16-seeyou-sg.ibyteimg.com
 p1n.in
 p1r.es
 p2p.alfabank.ua
@@ -13777,6 +13776,7 @@ plarium.com
 plat.ru
 plategka.com
 platezh.ru
+platform.claude.com
 platformtech.live
 platipokarte.ru
 platiza.ru
@@ -14089,7 +14089,6 @@ psd-rheinneckarsaar.de
 psd-westfalen-lippe.de
 psdbank-ht.de
 pse.is
-psee.io
 psfl.in
 psmi.info
 psu.edu
@@ -14154,9 +14153,11 @@ pws1ooo.xyz
 px.a8.net
 pxf.io
 pxgo.net
+pxl.fm
 pxl.leads.su
 pxlcrv.co
 pxlfy.me
+pxlme.me
 pxpayplus.com
 pxs.cl
 pxu.co
@@ -14307,7 +14308,6 @@ qrurl.cc
 qrurl.co
 qrurl.us
 qrx.im
-qry.kr
 qs.rams-app.com
 qs1.it
 qt-tchallenge.vercel.app
@@ -14863,7 +14863,6 @@ redirector.googlevideo.com
 redirector.gvt1.com
 redirects.ca
 redirigere.com
-redirme.com
 redirx.com
 redly.vip
 redr.me
@@ -15282,7 +15281,6 @@ s.mj.run
 s.mzstatic.com
 s.ndemiccreations.com
 s.noerr.com
-s.pnj.ac.id
 s.reddit.com
 s.reinhart1010.id
 s.rin.media
@@ -15765,6 +15763,10 @@ sevenforums.com
 sexuhot.com
 sexy.jill.survive.from.the.monster
 seylinks.com
+sf16-ug-neutral.capcutstatic.com
+sf16-web-login-neutral.capcutstatic.com
+sf16-web-tos-buz.capcutcdn-us.com
+sf16-web-tos-buz.capcutstatic.com
 sf3c.tw
 sfanalyse.com
 sfca.re
@@ -15993,7 +15995,6 @@ shorten.gg
 shorten.is
 shorten.pro
 shorten.rest
-shorten.tv
 shorten.world
 shortened.website
 shortenedlinks.com
@@ -16102,6 +16103,7 @@ shortlk.com
 shortll.com
 shortlnk.app
 shortlnk.co
+shortlnk.me
 shortlnk.xyz
 shortlr.com
 shortlurl.com
@@ -16234,6 +16236,7 @@ shpze.com
 shr.gg
 shr.li
 shrcr.us
+shre.ink
 shrink-your-link.org
 shrink.gg
 shrink.pe
@@ -16296,6 +16299,7 @@ shrtfly.com
 shrtli.com
 shrtlink.ai
 shrtlist.com
+shrtlk.click
 shrtlnk.com
 shrtlr-two.vercel.app
 shrtly.net
@@ -16315,7 +16319,6 @@ shrturl.com
 shrturl.io
 shrturl.site
 shrturll.com
-shrtx.pro
 shrtxb4d.live
 shrtxtus.wiki
 shrty.eu
@@ -16485,7 +16488,6 @@ skmb.de
 sknrd.us
 sko.rbkmoney.ru
 skp.la
-skr.rs
 skr.sk
 skrat.it
 skrbtfb.icu
@@ -16626,7 +16628,6 @@ smslinkly.com
 smsng.news
 smsng.us
 smst.ca
-smsu.io
 smtp.mail.yahoo.com
 smtps.uhserver.com
 smtvj.com
@@ -17290,6 +17291,7 @@ static0.xdaimages.com
 static2.manualslib.com
 staticflickr.com
 staticiv.com
+statics.link.com
 staticview.msn.com
 staticxx.facebook.com
 statistics4u.net
@@ -17880,7 +17882,6 @@ thefp.pub
 thefunkymonkey.lu
 theglobeandmail.com
 theguardian.com
-thehackernews.com
 thein.fo
 theinstapay.com
 thejoekuskie.com
@@ -18189,7 +18190,6 @@ tnyurl.one
 tnyurl.pro
 tnyweb.com
 to-text.net
-to.lk
 to.ly
 to.nconnect.asia
 to.pbs.org
@@ -18450,7 +18450,6 @@ trim-me.io
 trim-url.com
 trim.ac
 trim.cx
-trim.one
 trimaurl.com
 trimify.xyz
 trimlink.ai
@@ -18812,6 +18811,7 @@ umblr.com
 umcu.org
 umd.edu
 umdc.alipay.org
+ume.la
 umelink.net
 umich.edu
 uminify.com
@@ -19002,6 +19002,7 @@ url.eefocus.com
 url.elmark.com.pl
 url.enepe.fr
 url.firstvds.ru
+url.fti.or.th
 url.gratis
 url.hilberg.eu
 url.hle.com.tw
@@ -19087,7 +19088,6 @@ url88.online
 url8807.global.passport.xiaomi.com
 url8x.com
 urla.ru
-urladda.com
 urlah.com
 urlao.com
 urlaz.com
@@ -19119,7 +19119,6 @@ urlday.com
 urldeclic.com
 urldirect21-1.org
 urldn.com
-urle.me
 urlenco.de
 urlers.com
 urles.us
@@ -19280,6 +19279,7 @@ urlty.cc
 urlty.co
 urlunicorn.com
 urluno.com
+urlvanish.com
 urlverkorten.com
 urlverkorten.nl
 urlw.com
@@ -19289,9 +19289,9 @@ urlx.org
 urlxh.com
 urlxray.com
 urly.co
-urly.fi
 urly.pro
 urlyshort.pro
+urlyte.com
 urlyy.com
 urlz.at
 urlz.com
@@ -19682,6 +19682,7 @@ vid.lu
 vid.pr0gramm.com
 vid4u.net
 vidcy.co
+video-cf.spotifycdn.com
 video-stats.l.google.com
 video.bzi.ro
 video.xxxjmp.com
@@ -19789,7 +19790,6 @@ vm88bet.org
 vms.bluebillywig.com
 vms.bz
 vmshortlink.com
-vn.run
 vndr.tech
 vnl.vn
 vnlink.top
@@ -20558,6 +20558,7 @@ www.4shared.com
 www.7eer.net
 www.7iasi.ro
 www.888poker.com
+www.9am.ro
 www.abbl.com
 www.actuabd.com
 www.adf.ly
@@ -20609,6 +20610,7 @@ www.burobd.org
 www.byd.com
 www.bzi.ro
 www.cambridge.org
+www.capcut.com
 www.capebretonpost.com
 www.cc-dt.com
 www.cheatengine.org
@@ -21127,7 +21129,6 @@ yidbio.com
 yigza.com
 yiii.de
 yimg.com
-yip.su
 yji.tw
 ylg.org
 ylink.bid
@@ -21212,7 +21213,6 @@ ytube.io
 ytubl.ink
 ytxt.mobi
 yu.ac.kr
-yu3.io
 yuantabank.com.tw
 yubi.co
 yui.co
@@ -21321,7 +21321,6 @@ ziadi.co
 ziare.com
 ziffdavis.com
 zig.ht
-zight-shortner.replit.app
 zight.com
 zik.link
 zillow.com
@@ -21382,6 +21381,7 @@ znym.co
 znz.kr
 zo.cm
 zobzob.com
+zodiac-app-staging.firebaseapp.com
 zoho.com
 zoho.in
 zoho.to

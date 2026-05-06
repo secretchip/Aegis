@@ -1,6 +1,6 @@
 # AEGIS-DNS
 
-[![Daily list update](https://github.com/secretchip/AEGIS-DNS/actions/workflows/daily-update.yml/badge.svg)](https://github.com/secretchip/AEGIS-DNS/actions/workflows/daily-update.yml)
+Daily list update
 [![Last commit](https://img.shields.io/github/last-commit/secretchip/AEGIS-DNS)](https://github.com/secretchip/AEGIS-DNS/commits/main)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
 
@@ -21,12 +21,12 @@ other host-list-based filter.
 ## Stats
 
 <!-- stats:start -->
-_Last build: **2026-05-03 22:09 UTC**, took 17m 36s._
+_Last build: **2026-05-06 09:39 UTC**, took 19m 20s._
 
 | List  | Domains                | IPs                    | Chunks (domains / IPs) |
 | ----- | ---------------------: | ---------------------: | ---------------------: |
-| block | 45,759,524 | 209,298 | 23 / 1 |
-| allow | 21,438 | 21 | 1 / 1 |
+| block | 45,802,356 | 218,984 | 23 / 1 |
+| allow | 21,437 | 21 | 1 / 1 |
 
 Manually pinned: **0** block, **0** allow.
 <!-- stats:end -->
@@ -89,31 +89,15 @@ URL sources        validate +         allow/block        merge +
                    (Python)          (Python+awk)        (sort -u)
 ```
 
-A daily GitHub Actions workflow (`.github/workflows/daily-update.yml`)
-runs the pipeline at 04:00 UTC, opens a PR with the diff, and (for
-scheduled runs only) auto-merges when CI is green.
-
-For details on each pipeline stage, the validator, manual-input policy,
-sanity guards, and URL health tracking, see [CLAUDE.md](CLAUDE.md).
-
 ## Run the pipeline locally
 
 ```sh
 bash pipeline/run-all.sh
 ```
 
-…or stage-by-stage; see [CLAUDE.md](CLAUDE.md).
-
-Dependencies: `bash`, `python3` (stdlib only), standard Linux tools
-(`curl`, `awk`, `sort`, `split`, `grep`, `sed`).
-
 ## Contributing
 
-- **Add a source:** append the URL to `sources/block_urls.txt`
-  or `sources/allow_urls.txt`.
 - **Report a false positive:** open an issue or PR.
-- **Run the tests:** `python3 pipeline/tests/python/test_validate.py` and
-  `bash pipeline/tests/bash/test_reconcile_guard.sh`.
 
 ## License
 
