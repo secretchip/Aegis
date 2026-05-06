@@ -9,8 +9,6 @@ CLAUDE.md
 __pycache__/
 *.pyc
 
-# Legacy holdover (sibling-repo copies have been deleted; ignored as
-# defense-in-depth in case anything ever recreates the path)
 /var/
 /pipeline/
 /docs/
