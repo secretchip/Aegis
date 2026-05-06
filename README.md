@@ -1,6 +1,7 @@
 # AEGIS-DNS
 
 Daily list update
+
 [![Last commit](https://img.shields.io/github/last-commit/secretchip/AEGIS-DNS)](https://github.com/secretchip/AEGIS-DNS/commits/main)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue)](LICENSE)
 
