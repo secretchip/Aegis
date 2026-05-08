@@ -1,0 +1,58 @@
+name: "Report abuse"
+description: Report abuse, misuse, or harmful infrastructure related to AEGIS-DNS data or resolver operation.
+title: "[abuse] "
+labels: [abuse, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for abuse reports involving resolver misuse, harmful infrastructure, or urgent security concerns.
+
+        Do not include secrets, passwords, private keys, or sensitive personal data.
+
+  - type: dropdown
+    id: abuse_type
+    attributes:
+      label: Abuse type
+      options:
+        - malicious infrastructure
+        - resolver misuse
+        - harmful domain or host
+        - data quality concern with security impact
+        - legal or policy concern
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Explain what happened and why it requires review.
+    validations:
+      required: true
+
+  - type: textarea
+    id: indicators
+    attributes:
+      label: Relevant indicators
+      description: Domains, hosts, IPs, URLs, timestamps, resolver endpoint, logs, or other evidence.
+      render: text
+    validations:
+      required: false
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact email, optional
+      description: Provide only if you are comfortable being contacted for follow-up.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Pre-submit checklist
+      options:
+        - label: I have not included secrets, passwords, private keys, or sensitive personal data.
+          required: true

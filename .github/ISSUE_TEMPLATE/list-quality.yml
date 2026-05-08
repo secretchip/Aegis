@@ -1,0 +1,41 @@
+name: "Report list-quality issue"
+description: Report duplicate, malformed, outdated, or incorrectly categorized list entries.
+title: "[list-quality] "
+labels: [list-quality, needs-validation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for list-quality issues that are not strictly false positives or false negatives.
+
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: Issue type
+      options:
+        - duplicate entries
+        - malformed entries
+        - outdated entries
+        - wrong category
+        - broken source
+        - source quality problem
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: entries
+    attributes:
+      label: Affected entries or source
+      description: Paste relevant domains, IPs, URLs, list names, or source references.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Explain the problem and expected correction.
+    validations:
+      required: true

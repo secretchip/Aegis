@@ -1,0 +1,63 @@
+name: "Report false negative"
+description: A domain or host that should be blocked but is currently allowed.
+title: "[false-negative] "
+labels: [false-negative, type:block, needs-validation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to report a domain, host, or URL that appears malicious, suspicious, or unwanted but is not currently blocked by AEGIS-DNS.
+
+  - type: textarea
+    id: domains
+    attributes:
+      label: Domain(s), host(s), or URL(s)
+      description: One per line. Include the most specific hostname possible.
+      placeholder: |
+        suspicious.example.com
+        bad.example.net/path
+      render: text
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Suspected category
+      options:
+        - malware
+        - phishing
+        - scam
+        - spam
+        - ads or tracking
+        - command and control
+        - suspicious or unknown
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or context
+      description: Provide links, screenshots, sandbox results, vendor reports, or a short explanation.
+    validations:
+      required: true
+
+  - type: input
+    id: encountered
+    attributes:
+      label: Where did you observe it?
+      description: Example: browser warning, endpoint alert, SIEM alert, VirusTotal, urlscan, customer report.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Pre-submit checklist
+      options:
+        - label: I have checked that this is not already reported in open issues.
+          required: true
+        - label: I understand that submissions require validation before being added to block sources or pins.
+          required: true

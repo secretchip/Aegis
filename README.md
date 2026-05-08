@@ -22,12 +22,12 @@ other host-list-based filter.
 ## Stats
 
 <!-- stats:start -->
-_Last build: **2026-05-06 09:39 UTC**, took 19m 20s._
+_Last build: **2026-05-08 08:18 UTC**, took 21m 34s._
 
 | List  | Domains                | IPs                    | Chunks (domains / IPs) |
 | ----- | ---------------------: | ---------------------: | ---------------------: |
-| block | 45,802,356 | 218,984 | 23 / 1 |
-| allow | 21,437 | 21 | 1 / 1 |
+| block | 46,089,182 | 226,746 | 24 / 1 |
+| allow | 20,387 | 21 | 1 / 1 |
 
 Manually pinned: **0** block, **0** allow.
 <!-- stats:end -->
