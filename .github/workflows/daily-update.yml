@@ -1,0 +1,121 @@
+name: Daily list update
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # 04:00 UTC daily
+  workflow_dispatch:
+
+# Prevent concurrent runs from racing each other on the working tree.
+concurrency:
+  group: daily-update
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache IANA TLDs + URL health state
+        uses: actions/cache@v4
+        with:
+          path: |
+            pipeline/temp/iana-tlds.txt
+            var/state/url_health_block.tsv
+            var/state/url_health_allow.tsv
+            var/state/last-run-counts.tsv
+          # Stable key — we want the cache to persist across runs to keep the
+          # url-health failure counters and the verify-output baseline.
+          key: aegis-state-v1
+
+      - name: Run validator unit tests
+        run: python3 pipeline/tests/python/test_validate.py -v
+
+      - name: Run pipeline
+        env:
+          # Verify thresholds (override here if needed):
+          DROP_THRESHOLD: '20'
+          GROW_THRESHOLD: '500'
+        run: bash pipeline/run-all.sh
+
+      - name: Detect changes
+        id: detect
+        run: |
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes to publish."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git --no-pager diff --stat
+          fi
+
+      - name: Build PR body
+        if: steps.detect.outputs.changed == 'true'
+        id: prbody
+        run: |
+          {
+            echo "Automated daily list update."
+            echo
+            echo "## Changelog (this run)"
+            echo
+            echo '```tsv'
+            head -1 var/changelog/changelog.tsv 2>/dev/null || true
+            tail -8 var/changelog/changelog.tsv 2>/dev/null || true
+            echo '```'
+            echo
+            echo "## Verify summary"
+            echo
+            echo '```'
+            tail -n 200 var/state/last-run-counts.tsv 2>/dev/null || true
+            echo '```'
+            echo
+            echo "## Diff stat"
+            echo
+            echo '```'
+            git --no-pager diff --stat
+            echo '```'
+          } > /tmp/pr_body.md
+          {
+            echo 'body<<EOF'
+            cat /tmp/pr_body.md
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create pull request
+        if: steps.detect.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        id: cpr
+        with:
+          commit-message: "chore: daily list update ${{ github.run_id }}"
+          branch: auto/daily-update
+          delete-branch: true
+          title: "Daily list update — ${{ github.run_id }}"
+          body: ${{ steps.prbody.outputs.body }}
+          # Tag PR so the auto-merge step below only fires for cron-triggered
+          # runs, never for manual workflow_dispatch updates.
+          labels: |
+            automated
+            daily-update
+
+      - name: Enable auto-merge for scheduled runs
+        if: |
+          steps.detect.outputs.changed == 'true'
+          && steps.cpr.outputs.pull-request-number != ''
+          && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge --auto --squash "${{ steps.cpr.outputs.pull-request-number }}"

@@ -1,0 +1,88 @@
+name: Enforce category IDs
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse issue form body
+        id: parser
+        uses: issue-ops/parser@v5
+        with:
+          body: ${{ github.event.issue.body }}
+
+      - name: Validate categories against domain-categories.yml
+        uses: actions/github-script@v7
+        env:
+          PARSED_JSON: ${{ steps.parser.outputs.json }}
+        with:
+          script: |
+            const fs = require("fs");
+
+            const issue = context.payload.issue;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const parsed = JSON.parse(process.env.PARSED_JSON || "{}");
+
+            // Only enforce when these fields exist in the form (recategorization template)
+            const currentCategory = (parsed.current_category ?? "").toString().trim();
+            const requestedCategory = (parsed.requested_category ?? "").toString().trim();
+
+            if (!currentCategory && !requestedCategory) return;
+
+            const doc = fs.readFileSync(".github/domain-categories.yml", "utf8");
+
+            // Minimal YAML parse without extra deps
+            // Assumption: lines contain "  - id: <value>"
+            const ids = new Set(
+              doc
+                .split("\n")
+                .map(l => l.trim())
+                .filter(l => l.startsWith("id: "))
+                .map(l => l.slice(4).trim())
+                .filter(Boolean)
+            );
+
+            const invalid = [];
+            if (currentCategory && !ids.has(currentCategory)) invalid.push(`current_category: ${currentCategory}`);
+            if (requestedCategory && !ids.has(requestedCategory)) invalid.push(`requested_category: ${requestedCategory}`);
+
+            const addLabels = async (labels) => {
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: issue.number, labels
+              });
+            };
+
+            const comment = async (body) => {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: issue.number, body
+              });
+            };
+
+            if (!invalid.length) return;
+
+            await addLabels(["needs-info"]);
+
+            const validList = Array.from(ids).sort().map(x => `- ${x}`).join("\n");
+
+            await comment(
+              [
+                "Invalid category id detected in this request.",
+                "",
+                "Fix these fields and edit the issue:",
+                ...invalid.map(x => `- ${x}`),
+                "",
+                "Valid category ids are:",
+                validList
+              ].join("\n")
+            );

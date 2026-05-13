@@ -1,0 +1,77 @@
+name: Malicious classification removal
+description: Request removal of an incorrect malicious label
+title: "[Removal Request] <domain>"
+labels:
+  - removal-request
+  - needs-triage
+  - sev:untriaged
+assignees:
+  - cazacubogdan
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Request removal of a malicious classification.
+        Enterprise customers must use the dedicated Enterprise support portal.
+        Enterprise issues opened here will be closed automatically.
+
+  - type: dropdown
+    id: customer_tier
+    attributes:
+      label: Customer tier
+      options:
+        - Free
+        - SOHO
+        - SMB
+        - Enterprise
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: non_enterprise_confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I am not an Enterprise customer and understand Enterprise issues are not handled via GitHub
+          required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: input
+    id: domain
+    attributes:
+      label: Domain
+    validations:
+      required: true
+
+  - type: textarea
+    id: justification
+    attributes:
+      label: Why the classification is incorrect
+    validations:
+      required: true
+
+  - type: textarea
+    id: remediation
+    attributes:
+      label: Remediation performed
+    validations:
+      required: true
+
+  - type: textarea
+    id: proof
+    attributes:
+      label: Proof
+    validations:
+      required: true

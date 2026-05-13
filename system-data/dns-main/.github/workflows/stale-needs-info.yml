@@ -1,0 +1,47 @@
+name: Auto-close stale needs-info issues
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close issues stale in needs-info for 7+ days
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const days = 7;
+            const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+            const q = `repo:${owner}/${repo} is:issue is:open label:needs-info updated:<${cutoff.toISOString().slice(0,10)}`;
+
+            const search = await github.rest.search.issuesAndPullRequests({
+              q,
+              per_page: 100
+            });
+
+            for (const item of search.data.items) {
+              const issue_number = item.number;
+
+              const body = [
+                `No update received for ${days}+ days while waiting on requested details.`,
+                "",
+                "Closing automatically. Reopen after you provide the missing information."
+              ].join("\n");
+
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+              await github.rest.issues.update({ owner, repo, issue_number, state: "closed" });
+
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number, labels: ["auto-closed"]
+              });
+            }

@@ -1,0 +1,75 @@
+- name: planned
+  color: fbda04
+  description: Issue or feature is planned for future work
+
+- name: needs-triage
+  color: 0e8a16
+  description: Awaiting initial triage by maintainers
+
+- name: needs-info
+  color: fbca04
+  description: Reporter must provide missing details to proceed
+
+- name: auto-closed
+  color: cfd3d7
+  description: Closed automatically by workflow policy
+
+- name: sev:untriaged
+  color: ededed
+  description: Severity not yet confirmed by maintainers
+
+- name: sev:low
+  color: 0e8a16
+  description: Limited impact, workaround exists, not time sensitive
+
+- name: sev:medium
+  color: fbca04
+  description: Material impact, partial outage or degraded service
+
+- name: sev:high
+  color: d93f0b
+  description: Major impact, many users affected or core function broken
+
+- name: sev:critical
+  color: b60205
+  description: Severe impact, security risk or widespread outage, urgent response
+
+- name: tier:free
+  color: cfd3d7
+  description: Free tier customer or anonymous report
+
+- name: tier:smb
+  color: 1d76db
+  description: SMB customer
+
+- name: tier:soho
+  color: 1DD5DB
+  description: SOHO customer
+
+- name: tier:enterprise
+  color: 5319e7
+  description: Enterprise customer
+
+- name: false-positive
+  color: 0075ca
+  description: Domain appears blocked incorrectly
+
+- name: malicious
+  color: b60205
+  description: Malicious domain or threat intelligence report
+
+- name: removal-request
+  color: a2eeef
+  description: Request to remove a malicious classification
+
+- name: support
+  color: 7057ff
+  description: General support request
+
+- name: security
+  color: ee0701
+  description: Security report or vulnerability disclosure, handle out of band
+
+- name: security-redirected
+  color: cfd3d7
+  description: Reporter redirected to security disclosure channel

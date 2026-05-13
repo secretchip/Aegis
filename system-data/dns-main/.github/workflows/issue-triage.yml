@@ -1,0 +1,167 @@
+name: Issue triage
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse issue form body
+        id: parser
+        uses: issue-ops/parser@v5
+        with:
+          body: ${{ github.event.issue.body }}
+
+      - name: Apply labels and auto-close Enterprise submissions
+        uses: actions/github-script@v7
+        env:
+          PARSED_JSON: ${{ steps.parser.outputs.json }}
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const parsed = JSON.parse(process.env.PARSED_JSON || "{}");
+
+            const asText = (v) => {
+              if (v === null || v === undefined) return "";
+              if (Array.isArray(v)) return v.join(", ");
+              return String(v).trim();
+            };
+
+            const tierRaw =
+              parsed.customer_tier ??
+              parsed["Customer tier"] ??
+              parsed["customer tier"] ??
+              parsed["customer_tier"];
+
+            const sevRaw =
+              parsed.severity ??
+              parsed["Severity"] ??
+              parsed["severity"];
+
+            const tier = asText(tierRaw).toLowerCase();
+            const sev = asText(sevRaw).toLowerCase();
+
+            const getCurrentLabels = async () => {
+              const { data } = await github.rest.issues.listLabelsOnIssue({
+                owner,
+                repo,
+                issue_number: issue.number,
+                per_page: 100
+              });
+              return data.map((x) => x.name);
+            };
+
+            const addLabels = async (labels) => {
+              if (!labels.length) return;
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: issue.number,
+                labels
+              });
+            };
+
+            const removeLabel = async (name) => {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  name
+                });
+              } catch (e) {}
+            };
+
+            const comment = async (body) => {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issue.number,
+                body
+              });
+            };
+
+            const close = async () => {
+              await github.rest.issues.update({
+                owner,
+                repo,
+                issue_number: issue.number,
+                state: "closed"
+              });
+            };
+
+            const current = await getCurrentLabels();
+
+            // Baseline triage labels for all issues, including Security reports.
+            // Keep sev:untriaged even if a specific sev:* is applied later, until you decide otherwise.
+            const baseline = ["needs-triage", "sev:untriaged"];
+            await addLabels(baseline.filter((l) => !current.includes(l)));
+
+            // Enterprise submissions are redirected and auto-closed.
+            // Security reports are allowed for Free/SMB and are NOT auto-closed.
+            if (tier.includes("enterprise")) {
+              await addLabels(["tier:enterprise", "auto-closed"].filter((l) => !current.includes(l)));
+
+              await comment(
+                [
+                  "This repository does not accept Enterprise support requests.",
+                  "",
+                  "Please contact our support staff using the dedicated Enterprise support portal."
+                ].join("\n")
+              );
+
+              await close();
+              return;
+            }
+
+            // Tier labels for Free/SMB.
+            const tierAll = ["tier:soho","tier:free", "tier:smb", "tier:enterprise"];
+            const desiredTier = tier.includes("smb") ? "tier:smb" : tier.includes("soho") ? "tier:soho" : "tier:free";
+
+            await addLabels([desiredTier].filter((l) => !current.includes(l)));
+
+            // Remove any wrong tier labels.
+            for (const l of tierAll) {
+              if (l !== desiredTier && current.includes(l)) {
+                await removeLabel(l);
+              }
+            }
+
+            // Severity mapping from the form selection to sev:* labels.
+            // This applies equally to security and non-security issues.
+            const sevAll = ["sev:low", "sev:medium", "sev:high", "sev:critical", "sev:untriaged"];
+            const sevMap = {
+              low: "sev:low",
+              medium: "sev:medium",
+              high: "sev:high",
+              critical: "sev:critical"
+            };
+
+            let desiredSev = "sev:untriaged";
+            for (const k of Object.keys(sevMap)) {
+              if (sev === k || sev.includes(k)) {
+                desiredSev = sevMap[k];
+                break;
+              }
+            }
+
+            await addLabels([desiredSev].filter((l) => !current.includes(l)));
+
+            // Keep exactly one sev:* label.
+            // If a specific severity is selected, remove sev:untriaged.
+            for (const l of sevAll) {
+              if (l !== desiredSev && current.includes(l)) {
+                await removeLabel(l);
+              }
+            }
+            if (desiredSev !== "sev:untriaged" && current.includes("sev:untriaged")) {
+              await removeLabel("sev:untriaged");
+            }

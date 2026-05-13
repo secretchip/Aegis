@@ -1,0 +1,91 @@
+name: Malicious domain report
+description: Report a domain involved in malware, phishing, or abuse
+title: "[Malicious] <domain>"
+labels:
+  - malicious
+  - needs-triage
+  - sev:untriaged
+assignees:
+  - cazacubogdan
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report confirmed or suspected malicious domains.
+        Enterprise customers must use the dedicated Enterprise support portal.
+        Enterprise issues opened here will be closed automatically.
+
+  - type: dropdown
+    id: customer_tier
+    attributes:
+      label: Customer tier
+      options:
+        - Free
+        - SOHO
+        - SMB
+        - Enterprise
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: non_enterprise_confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I am not an Enterprise customer and understand Enterprise issues are not handled via GitHub
+          required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: input
+    id: domain
+    attributes:
+      label: Domain
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Threat category
+      options:
+        - Malware
+        - Phishing
+        - Scam
+        - Command and Control
+        - Exploit delivery
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed_activity
+    attributes:
+      label: Observed activity
+    validations:
+      required: true
+
+  - type: textarea
+    id: iocs
+    attributes:
+      label: Indicators of compromise
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+    validations:
+      required: false

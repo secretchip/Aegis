@@ -1,0 +1,32 @@
+name: Security report
+description: Report a security vulnerability using the responsible disclosure process
+title: "[Security] <short summary>"
+labels:
+  - security
+  - needs-triage
+  - sev:untriaged
+assignees:
+  - cazacubogdan
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Security vulnerabilities must follow the process defined in SECURITY.md.
+        Do not include exploit details, payloads, credentials, or customer data here.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: High-level summary
+      description: No exploit steps or sensitive data
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Acknowledgement
+      options:
+        - label: I have read SECURITY.md and will follow the responsible disclosure process
+          required: true

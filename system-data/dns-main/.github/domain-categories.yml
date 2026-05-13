@@ -1,0 +1,50 @@
+version: 1
+categories:
+  - id: ads
+    title: Ads
+    description: Advertising domains and ad delivery infrastructure
+  - id: tracking
+    title: Tracking
+    description: Cross-site tracking, analytics beacons, fingerprinting
+  - id: malware
+    title: Malware
+    description: Malware distribution, droppers, payload hosting
+  - id: phishing
+    title: Phishing
+    description: Credential theft, fake login pages, brand spoofing
+  - id: scam
+    title: Scam
+    description: Fraud, fake shops, deceptive offers
+  - id: c2
+    title: Command and Control
+    description: C2 infrastructure and beacon endpoints
+  - id: exploit
+    title: Exploit Delivery
+    description: Exploit kits, drive-by delivery, weaponized content
+  - id: gambling
+    title: Gambling
+    description: Online gambling services and affiliates
+  - id: adult
+    title: Adult
+    description: Adult content and related infrastructure
+  - id: crypto-scam
+    title: Crypto scam
+    description: Fraud related to crypto, fake wallets, fake exchanges
+  - id: parked
+    title: Parked
+    description: Parked domains, domain squatters, generic parking
+  - id: newly-registered
+    title: Newly registered
+    description: Newly registered domains with elevated risk signals
+  - id: cdn
+    title: CDN and hosting
+    description: Hosting and CDN domains, often shared infrastructure
+  - id: business
+    title: Business
+    description: Legitimate business and SaaS domains
+  - id: infrastructure
+    title: Infrastructure
+    description: DNS, NTP, OCSP, update servers, core internet services
+  - id: other
+    title: Other
+    description: Does not fit other categories, needs manual review

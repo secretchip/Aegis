@@ -10,7 +10,20 @@ __pycache__/
 *.pyc
 
 /var/
-/pipeline/
+
+# Ignore everything inside pipeline/ EXCEPT the shared validator used by
+# .github/workflows/validate-submission.yml (via the symlink at
+# .github/scripts/validate.py). Git won't honour `!` negations on files
+# inside a fully-ignored directory, so each level uses `/*` to ignore
+# contents while keeping the directory itself walkable.
+/pipeline/*
+!/pipeline/lib/
+/pipeline/lib/*
+!/pipeline/lib/python/
+/pipeline/lib/python/*
+!/pipeline/lib/python/validate.py
+!/pipeline/lib/python/__init__.py
+
 /docs/
 /consumers/
 /sources/

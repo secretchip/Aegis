@@ -3,15 +3,15 @@
 # Chunk          : ips-allow-part0.txt (1 of 1)
 # Lines in chunk : 21
 #
-# Block domains  : 46,089,182 across 24 chunk(s)
-# Block IPs      : 226,746 across 1 chunk(s)
-# Allow domains  : 20,387 across 1 chunk(s)
+# Block domains  : 46,162,183 across 24 chunk(s)
+# Block IPs      : 234,344 across 1 chunk(s)
+# Allow domains  : 21,600 across 1 chunk(s)
 # Allow IPs      : 21 across 1 chunk(s)
 # Pinned (block) : 0
 # Pinned (allow) : 0
 #
-# Build started  : 2026-05-08T08:18:33Z
-# Build duration : 21m 34s
+# Build started  : 2026-05-13T14:54:54Z
+# Build duration : 14m 27s
 # Manifest       : https://raw.githubusercontent.com/secretchip/AEGIS-DNS/refs/heads/main/public_allow_lists/manifest.json
 ##############################################################################
 

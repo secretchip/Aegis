@@ -1,0 +1,62 @@
+name: General support
+description: Ask a general usage or configuration question
+title: "[Support] <summary>"
+labels:
+  - support
+  - needs-triage
+  - sev:untriaged
+assignees:
+  - cazacubogdan
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for Free, SOHO, and SMB support only.
+        Enterprise support is handled outside GitHub.
+
+  - type: dropdown
+    id: customer_tier
+    attributes:
+      label: Customer tier
+      options:
+        - Free
+        - SOHO
+        - SMB
+        - Enterprise
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: non_enterprise_confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I am not an Enterprise customer and understand Enterprise issues are not handled via GitHub
+          required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: textarea
+    id: request
+    attributes:
+      label: Request
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment details
+    validations:
+      required: true

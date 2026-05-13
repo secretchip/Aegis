@@ -1,0 +1,80 @@
+name: False positive report
+description: Report a legitimate domain that is blocked incorrectly
+title: "[False Positive] <domain>"
+labels:
+  - false-positive
+  - needs-triage
+  - sev:untriaged
+assignees:
+  - cazacubogdan
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to report incorrect blocking.
+        Enterprise customers must use the dedicated Enterprise support portal.
+        Enterprise issues opened here will be closed automatically.
+
+  - type: dropdown
+    id: customer_tier
+    attributes:
+      label: Customer tier
+      options:
+        - Free
+        - SOHO
+        - SMB
+        - Enterprise
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: non_enterprise_confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I am not an Enterprise customer and understand Enterprise issues are not handled via GitHub
+          required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: input
+    id: domain
+    attributes:
+      label: Domain
+      placeholder: example.com
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: What breaks due to this block
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence of legitimacy
+      description: Links or reputation checks
+    validations:
+      required: true

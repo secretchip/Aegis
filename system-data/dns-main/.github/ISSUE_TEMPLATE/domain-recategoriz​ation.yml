@@ -1,0 +1,108 @@
+name: Domain recategorization
+description: Request a change to the category assigned to a domain
+title: "[Recategorization] <domain>"
+labels:
+  - needs-triage
+  - sev:untriaged
+assignees:
+  - cazacubogdan
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to request a category change for a domain.
+        This is not a false positive unblock and not a malicious label removal.
+
+        Category values must use category ids from:
+        .github/domain-categories.yml
+
+        Hint: open the file in the repo:
+        ../blob/main/.github/domain-categories.yml
+
+        Enterprise customers must use the dedicated Enterprise support portal.
+        Enterprise issues opened here will be closed automatically.
+
+  - type: dropdown
+    id: customer_tier
+    attributes:
+      label: Customer tier
+      options:
+        - Free
+        - SOHO
+        - SMB
+        - Enterprise
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: non_enterprise_confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I am not an Enterprise customer and understand Enterprise issues are not handled via GitHub
+          required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: Impact of incorrect categorization
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: input
+    id: domain
+    attributes:
+      label: Domain
+      placeholder: example.com
+    validations:
+      required: true
+
+  - type: input
+    id: current_category
+    attributes:
+      label: Current category id
+      description: Use a category id from .github/domain-categories.yml
+      placeholder: tracking
+    validations:
+      required: true
+
+  - type: input
+    id: requested_category
+    attributes:
+      label: Requested category id
+      description: Use a category id from .github/domain-categories.yml
+      placeholder: business
+    validations:
+      required: true
+
+  - type: textarea
+    id: justification
+    attributes:
+      label: Justification
+      description: Explain why the current category is incorrect
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting evidence
+      description: Links, screenshots, reputation checks, or documentation
+      placeholder: Website content, WHOIS data, VirusTotal link, vendor docs
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Acknowledgement
+      options:
+        - label: I confirm this request is accurate and made in good faith
+          required: true
