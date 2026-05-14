@@ -13,6 +13,3 @@
 # Format: validated FQDN / wildcard / IPv4, one per line, comments above
 # (citing the issue and submitter). The pipeline never reads this file —
 # the only consumer is the human maintainer.
-
-# From issue #1 submitted by @cazacubogdan on 2026-05-13
-dns-block-test.secretchip.net
